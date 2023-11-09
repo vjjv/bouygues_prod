@@ -28097,7 +28097,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
     document.getElementById('canvas').replaceWith(session.output.live);
 
     // const { lenses } = await cameraKit.lensRepository.loadLensGroups(['1c840cc0-bead-4a6d-8328-1fbe4a5ba67a']);
-    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['a807b90b-4b77-4def-a142-495d0636d1f5']);
+    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
 
     session.applyLens(lenses[0]);
 
