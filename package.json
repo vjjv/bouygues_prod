@@ -1,0 +1,36 @@
+{
+  "name": "camera-kit-bouygues",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack --mode=development --watch",
+    "build": "webpack",
+    "serve": "webpack-dashboard -- webpack-dev-server --https --port 9000"
+  },
+  "keywords": [],
+  "author": "Filtre Experience",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-loader": "^9.5.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "dependencies": {
+    "@snap/camera-kit": "^0.13.1",
+    "jquery": "^3.7.0",
+    "webpack-dashboard": "^3.3.8"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vjjv/bouygues_git.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vjjv/bouygues_git/issues"
+  },
+  "homepage": "https://github.com/vjjv/bouygues_git#readme"
+}
