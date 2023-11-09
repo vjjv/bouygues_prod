@@ -27,10 +27,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vjjv/bouygues_git.git"
+    "url": "git+https://github.com/vjjv/bouygues_prod.git"
   },
   "bugs": {
-    "url": "https://github.com/vjjv/bouygues_git/issues"
+    "url": "https://github.com/vjjv/bouygues_prod/issues"
   },
-  "homepage": "https://github.com/vjjv/bouygues_git#readme"
+  "homepage": "https://github.com/vjjv/bouygues_prod#readme"
 }
