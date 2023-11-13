@@ -20,5 +20,6 @@ module.exports = {
     compress: true,
     port: 9000,
   },
+  mode: 'production'
 };
 

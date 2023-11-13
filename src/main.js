@@ -2,13 +2,13 @@ import {
     bootstrapCameraKit,
     createMediaStreamSource,
     Transform2D,
-    Injectable,
-    RemoteApiService,
-    RemoteApiServices,
-    RemoteApiRequest,
-    RemoteApiRequestHandler,
-    RemoteApiStatus,
-    remoteApiServicesFactory
+    //Injectable,
+    //RemoteApiService,
+    //RemoteApiServices,
+    //RemoteApiRequest,
+    //RemoteApiRequestHandler,
+    //RemoteApiStatus,
+    //remoteApiServicesFactory
 
 } from '@snap/camera-kit'
 
@@ -21,7 +21,7 @@ import {
 
         getRequestHandler(request) {
             if (request.endpointId !== "codemail") return;
-            
+
 
             return (reply) => {
                 fetch("https://bouygues-404412.lm.r.appspot.com/codemail?code=x&mail=y", {
@@ -72,18 +72,18 @@ import {
 
 
 
-    //var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' })
-  
+    var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' })
 
-    var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' }, (container) =>
-    container.provides(
-        Injectable(
-            remoteApiServicesFactory.token,
-            [remoteApiServicesFactory.token],
-            (existing) => [...existing, damsService]
-        )
-    )
-);
+    //USING REMOTE API
+    // var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' }, (container) =>
+    // container.provides(
+    //     Injectable(
+    //         remoteApiServicesFactory.token,
+    //         [remoteApiServicesFactory.token],
+    //         (existing) => [...existing, damsService]
+    //     )
+    // )
+    //);
 
     const session = await cameraKit.createSession();
 

@@ -5708,9 +5708,9 @@ var __webpack_exports__ = {};
 "use strict";
 
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/environment.json
-const environment_namespaceObject = JSON.parse('{"l":"0.13.1-alpha.1"}');
+const environment_namespaceObject = JSON.parse('{"l":"0.12.0-alpha.1"}');
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/lensCoreWasmVersions.json
-const lensCoreWasmVersions_namespaceObject = JSON.parse('{"i8":"231","c$":"111","FH":"https://cf-st.sc-cdn.net/d/Cqf3dzYV6Dvo2mhyCozDq?go=IgsKCTIBBEgBUFxgAQ%3D%3D&uc=92"}');
+const lensCoreWasmVersions_namespaceObject = JSON.parse('{"i8":"225","c$":"64","FH":"https://cf-st.sc-cdn.net/d/JigrWXPgfeH1cbTxyo1FM?go=IgsKCTIBBEgBUFxgAQ%3D%3D&uc=92"}');
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/common/copyDefinedProperties.js
 /**
  * Copy only those properties of an object which are not undefined.
@@ -8306,24 +8306,11 @@ const defaultFetchHandlerFactory = Injectable("defaultFetchHandler", () => {
     // elsewhere (e.g. so that callers can omit the second argument instead of being forced to pass undefined).
     new HandlerChainBuilder(fetch)
         .map(createDebugHandler())
-        // The 20-second per-request timeout is pretty arbitrary, it's just set to be longer than our API gateway
-        // timeout (15s) and lower than the browsers own timeout (variable, Chrome's is 5m).
-        .map(createTimeoutHandler({ timeout: 20 * 1000 }))
         .map(createNoCorsRetryingFetchHandler())
-        .map(createRetryingHandler({
-        maxRetries: 3,
-        retryPredicate: (responseOrError) => {
-            // Don't retry successful Responses or Responses with a 4xx HTTP status code (indicating a
-            // client error). Do retry all 5xx HTTP status codes.
-            if (responseOrError instanceof Response) {
-                if (responseOrError.ok)
-                    return false;
-                if (responseOrError.status % 400 < 100)
-                    return false;
-            }
-            return true;
-        },
-    })).handler);
+        .map(createRetryingHandler())
+        // TODO: completely arbitrary timeout -- this should be configurable by consumers, and we should think
+        // about a sane default timeout UX... it's probably less than 10 seconds.
+        .map(createTimeoutHandler({ timeout: 10 * 1000 })).handler);
 });
 //# sourceMappingURL=defaultFetchHandler.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/common/locale.js
@@ -8524,7 +8511,7 @@ function parseApplicationOrigin() {
     return origin;
 }
 function getCameraKitUserAgent() {
-    var _a, _b;
+    var _a;
     const userAgent = (_a = navigator.userAgent) !== null && _a !== void 0 ? _a : "";
     // [NavigatorUAData](https://developer.mozilla.org/en-US/docs/Web/API/NavigatorUAData) is currently only
     // available on Chromium-based browsers – it's nice because it gives us clear, well-documented information. But
@@ -8567,7 +8554,6 @@ function getCameraKitUserAgent() {
         browser,
         origin,
         userAgent: cameraKitUserAgent,
-        connectionType: (_b = navigator.connection) === null || _b === void 0 ? void 0 : _b.type,
     };
 }
 /** @internal */
@@ -9215,13 +9201,9 @@ class LensSources {
         var _a, _b;
         return tslib_es6_awaiter(this, void 0, void 0, function* () {
             if ((_a = this.source) === null || _a === void 0 ? void 0 : _a.isGroupOwner(groupId)) {
-                if (isUndefined(lensId)) {
-                    if (this.source.getLensGroup)
-                        return this.source.getLensGroup(groupId);
-                }
-                else if (this.source.getLens) {
-                    return this.source.getLens(lensId, groupId).then((envelope) => [envelope]);
-                }
+                return isUndefined(lensId)
+                    ? this.source.getLensGroup(groupId)
+                    : this.source.getLens(lensId, groupId).then((envelope) => [envelope]);
             }
             return (_b = this.fallbackSources) === null || _b === void 0 ? void 0 : _b.retrieveLenses({ groupId, lensId });
         });
@@ -9238,7 +9220,7 @@ const lensSourcesFactory = Injectable("lensSources", () => LensSources.empty());
 function stringifyError(error) {
     var _a;
     const outer = (_a = error.stack) !== null && _a !== void 0 ? _a : "";
-    return error.cause ? `${outer}\nCaused by:\n\t${stringifyError(errorHelpers_ensureError(error.cause))}` : outer;
+    return error.cause ? `${outer}\nCaused By: ${stringifyError(errorHelpers_ensureError(error.cause))}` : outer;
 }
 /**
  * If given a value of type Error, return it – otherwise wrap the value in an Error.
@@ -9256,7 +9238,6 @@ function errorHelpers_ensureError(error) {
 //# sourceMappingURL=errorHelpers.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/common/time.js
 const getTimeMs = () => performance.now();
-const convertDaysToSeconds = (days) => days * 24 * 60 * 60;
 //# sourceMappingURL=time.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/events/TypedCustomEvent.js
 /**
@@ -10340,103 +10321,10 @@ function toPublicLens({ id, name, content, vendorData, cameraFacingPreference, l
     };
 }
 //# sourceMappingURL=Lens.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/generated-proto/pb_schema/camera_kit/v3/features/remote_api_info.js
-/* eslint-disable */
-
-
-const remote_api_info_protobufPackage = "com.snap.camerakit.v3.features";
-function createBaseRemoteApiInfo() {
-    return { apiSpecIds: [] };
-}
-const RemoteApiInfo = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        for (const v of message.apiSpecIds) {
-            writer.uint32(10).string(v);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseRemoteApiInfo();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.apiSpecIds.push(reader.string());
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a;
-        const message = createBaseRemoteApiInfo();
-        message.apiSpecIds = ((_a = object.apiSpecIds) === null || _a === void 0 ? void 0 : _a.map((e) => e)) || [];
-        return message;
-    },
-};
-if ((minimal_default()).util.Long !== (long_default())) {
-    (minimal_default()).util.Long = (long_default());
-    minimal_default().configure();
-}
-//# sourceMappingURL=remote_api_info.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/common/any.js
-
-// There is a discrepancy in how the CameraKit backend and ts-proto serialize a protobuf message into JSON.
-// The backend serialization follows the spec outlined here:
-// https://protobuf.dev/reference/protobuf/google.protobuf/#json
-// According to this specification, the actual message is represented as JSON
-// with an additional @type discriminator field.
-// However, this approach is not consistent with what the client-side expects for Any.
-// It requires it to be in the format { typeUrl: string, value: UInt8Array }.
-// Therefore, we need to map the JSON representation of Any to the actual Any message.
-// This issue only applies to JSON-serialized protos returned by our backend.
-// The JSON serialization of the ts-proto package that we use
-// does not appear to be following the spec regarding Any.
-// Even if it does, the deserialization part has to be handled manually.
-// This issue does not apply to cases where the Lens object is deserialized from a binary proto message.
-// Ideally, to fix this issue, we want to switch to gRPC web for our backend communication,
-// similar to how we do it for COF. Ticket: https://jira.sc-corp.net/browse/CAMKIT-4668
-const knownAnyTypes = {
-    remoteApiInfo: "type.googleapis.com/com.snap.camerakit.v3.features.RemoteApiInfo",
-};
-/**
- * Gets JSON-serialized any message and maps it to JS representation of Any type.
- * @param jsonAny JSON-serialized any message according to spec:
- * https://protobuf.dev/reference/protobuf/google.protobuf/#json
- * @returns JS representation of Any proto message.
- */
-function encodeKnownAnyJson(jsonAny) {
-    const typeUrl = jsonAny["@type"];
-    if (typeUrl === knownAnyTypes.remoteApiInfo) {
-        return {
-            typeUrl,
-            // Safety: we know that spec ensures all message fields to exists
-            value: RemoteApiInfo.encode(jsonAny).finish(),
-        };
-    }
-}
-//# sourceMappingURL=any.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/lens/lensHttpUtil.js
 
 
-
 const relativePath = "/com.snap.camerakit.v3.Lenses";
-function fixAny(lens) {
-    // The Lens is serialized into JSON by the CameraKit backend, which is vulnerable
-    // to serialization discrepancies between the backend and ts-proto generated serializers.
-    // See packages/web-sdk/src/common/any.ts
-    const featureMetadata = lens.featureMetadata.reduce((fixedAnys, anyToFix) => {
-        // Safety: anyToFix is actually AnyJson, due to how our backend serializes it
-        const fixedAny = encodeKnownAnyJson(anyToFix);
-        return fixedAny ? [...fixedAnys, fixedAny] : fixedAnys;
-    }, []);
-    return Object.assign(Object.assign({}, lens), { featureMetadata });
-}
 function getRequestId(res) {
     return res.headers.get("x-request-id");
 }
@@ -10446,15 +10334,10 @@ function retrieveCameraKitLens(httpClient, lensId, groupId, apiHostname) {
         const response = yield httpClient(url, { credentials: "include" });
         const body = yield response.json();
         const lens = body.lens;
-        if (!response.ok) {
-            throw new Error(`Cannot load lens ${lensId} in group ${groupId}. GetGroupLens responded with status ` +
-                `${response.status} and body:\n\t${JSON.stringify(body)} for requestId ${getRequestId(response)}`);
-        }
         if (!isLensProto(lens)) {
-            throw new Error(`Cannot load lens ${lensId} in group ${groupId}. The response was not a Lens:` +
-                `\n\t${JSON.stringify(body)} for requestId ${getRequestId(response)}`);
+            throw new Error(`Expected request to ${url} to return a Lens. Got:\n\n${JSON.stringify(body)} with request-id of "${getRequestId(response)}"`);
         }
-        return fixAny(lens);
+        return lens;
     });
 }
 function retrieveCameraKitLensGroup(httpClient, groupId, apiHostname) {
@@ -10462,15 +10345,10 @@ function retrieveCameraKitLensGroup(httpClient, groupId, apiHostname) {
         const url = `https://${apiHostname}${relativePath}/groups/${groupId}`;
         const response = yield httpClient(url, { credentials: "include" });
         const body = yield response.json();
-        if (!response.ok) {
-            throw new Error(`Cannot load lens group ${groupId}. GetGroup responded with status ` +
-                `${response.status} and body:\n\t${JSON.stringify(body)} for requestId ${getRequestId(response)}`);
-        }
         if (!isGetGroupResponse(body)) {
-            throw new Error(`Cannot load lens group ${groupId}. The response was not a LensGroup:` +
-                `\n\t${JSON.stringify(body)} for requestId ${getRequestId(response)}`);
+            throw new Error(`Expected request to ${url} to return a LensGroup. Got:\n\n${JSON.stringify(body)} with request-id of "${getRequestId(response)}"`);
         }
-        return body.lenses.map(fixAny);
+        return body.lenses;
     });
 }
 //# sourceMappingURL=lensHttpUtil.js.map
@@ -11177,7 +11055,6 @@ var Namespace;
     Namespace[Namespace["DEFAULT"] = 0] = "DEFAULT";
     Namespace[Namespace["LENS_CORE"] = 64] = "LENS_CORE";
     Namespace[Namespace["CAMERA_KIT_CORE"] = 65] = "CAMERA_KIT_CORE";
-    Namespace[Namespace["LENS_CORE_CONFIG"] = 143] = "LENS_CORE_CONFIG";
     Namespace[Namespace["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
 })(Namespace || (Namespace = {}));
 if ((minimal_default()).util.Long !== (long_default())) {
@@ -15040,9 +14917,6 @@ class ExpiringPersistence {
     constructor(expiration, persistence) {
         this.expiration = expiration;
         this.persistence = persistence;
-        this.removeExpired().catch(() => {
-            ExpiringPersistence_logger.warn("Failed to cleanup expired entries on startup.");
-        });
     }
     get size() {
         return this.persistence.size;
@@ -15065,7 +14939,7 @@ class ExpiringPersistence {
     retrieveAll() {
         return tslib_es6_awaiter(this, void 0, void 0, function* () {
             const now = Date.now();
-            return (yield this.persistence.retrieveAll()).filter(([, [expiry]]) => expiry >= now).map(([, v]) => v);
+            return (yield this.persistence.retrieveAll()).filter(([expiry]) => expiry >= now).map(([, v]) => v);
         });
     }
     remove(key) {
@@ -15075,17 +14949,6 @@ class ExpiringPersistence {
         return tslib_es6_awaiter(this, void 0, void 0, function* () {
             const results = yield this.persistence.removeAll();
             return results.map(([, v]) => v);
-        });
-    }
-    removeExpired() {
-        return tslib_es6_awaiter(this, void 0, void 0, function* () {
-            for (const [key, [expiry]] of yield this.persistence.retrieveAll()) {
-                if (Date.now() >= expiry) {
-                    yield this.persistence
-                        .remove(key)
-                        .catch((error) => ExpiringPersistence_logger.warn(`Failed to remove expired key ${key}.`, error));
-                }
-            }
         });
     }
     store(keyOrValue, maybeValue) {
@@ -15181,17 +15044,7 @@ class IndexedDBPersistence {
         return this.simpleTransaction("readonly", (store) => store.get(key));
     }
     retrieveAll() {
-        return tslib_es6_awaiter(this, void 0, void 0, function* () {
-            const results = [];
-            const { store, done } = yield this.transaction("readonly");
-            let request = yield wrapCursorRequest(store.openCursor());
-            while (request.cursor) {
-                results.push([request.cursor.primaryKey, request.cursor.value]);
-                request = yield request.continue();
-            }
-            yield done;
-            return results;
-        });
+        return this.simpleTransaction("readonly", (store) => store.getAll());
     }
     remove(key) {
         return tslib_es6_awaiter(this, void 0, void 0, function* () {
@@ -17352,31 +17205,13 @@ const operationalMetricReporterFactory = Injectable("operationalMetricsReporter"
         });
     }, pageVisibility))
         .map(createBatchingHandler({
-        // The batching logic here is very simple – it could be improved by e.g.
-        // computing statistics to reduce overall data sent, etc. Right now this is
+        // The batching logic here is very simple – it could be improved by e.g. combining counts with
+        // the same name, computing statistics to reduce overall data sent, etc. Right now this is
         // premature optimization, but could become a good idea in the future.
         batchReduce: (previousBundle, metric) => {
-            var _a, _b;
-            let metrics = [...((_a = previousBundle === null || previousBundle === void 0 ? void 0 : previousBundle.metrics) !== null && _a !== void 0 ? _a : [])];
-            // For "count" metrics, it's straightforward to merge them into
-            // a single metric with the same name.
-            const existingCountIndex = ((_b = metric.metric) === null || _b === void 0 ? void 0 : _b.$case) === "count"
-                ? metrics.findIndex((m) => { var _a; return metric.name === m.name && ((_a = m.metric) === null || _a === void 0 ? void 0 : _a.$case) === "count"; })
-                : -1;
-            if (existingCountIndex >= 0) {
-                // Safety: Given the condition above, we can be sure that both the existing and new metrics
-                // are of the "count" type.
-                const existingValue = metrics[existingCountIndex].metric;
-                const newValue = metric.metric;
-                metrics.splice(existingCountIndex, 1, Object.assign(Object.assign({}, metric), { metric: {
-                        $case: "count",
-                        count: existingValue.count + newValue.count,
-                    } }));
-            }
-            else {
-                metrics.push(metric);
-            }
-            return { metrics };
+            const bundle = previousBundle !== null && previousBundle !== void 0 ? previousBundle : { metrics: [] };
+            bundle.metrics.push(metric);
+            return bundle;
         },
         isBatchComplete: (bundle) => bundle.metrics.length >= METRIC_BATCH_MAX_SIZE,
         maxBatchAge: METRIC_BATCH_MAX_AGE_MS,
@@ -17496,7 +17331,7 @@ const cofHandlerFactory = Injectable("cofHandler", [configurationToken, requestS
 
 
 const defaultTargetingRequest = {
-    namespaces: [Namespace.LENS_CORE, Namespace.CAMERA_KIT_CORE, Namespace.LENS_CORE_CONFIG],
+    namespaces: [Namespace.LENS_CORE, Namespace.CAMERA_KIT_CORE],
 };
 const initializeConfigRelativePath = "/com.snap.camerakit.v3.Metrics/metrics/initialization_config";
 class RemoteConfiguration {
@@ -17539,16 +17374,8 @@ class RemoteConfiguration {
     /**
      * Configuration that is provided by Camera Kit backend.
      */
-    getInitializationConfig() {
+    getIntializationConfig() {
         return this.initializationConfig;
-    }
-    getNamespace(namespace) {
-        return this.configById.pipe(map((configs) => {
-            const namespaceConfigs = Array.from(configs.values())
-                .filter((values) => values.some((c) => c.namespace === namespace))
-                .flatMap((results) => results);
-            return namespaceConfigs;
-        }));
     }
 }
 const remoteConfigurationFactory = Injectable("remoteConfiguration", [configurationToken, cofHandlerFactory.token, cameraKitServiceFetchHandlerFactory.token], (config, cofHandler, fetchHandler) => {
@@ -18880,7 +18707,7 @@ Transform2D_Transform2D.Identity = new Transform2D_Transform2D([1.0, 0.0, 0.0, 0
 
 
 const defaultDeviceInfo = {
-    cameraType: "user",
+    cameraType: "front",
     fpsLimit: Number.POSITIVE_INFINITY,
 };
 const createNotAttachedError = (message) => new Error(`${message}. This CameraKitSource is not attached to a CameraKitSession.`);
@@ -18924,7 +18751,7 @@ class CameraKitSource_CameraKitSource {
                     pauseExistingMedia: false,
                     replayTrackingData: this.sourceInfo.replayTrackingData,
                     requestWebcam: false,
-                    startOnFrontCamera: ["user", "front"].includes(this.deviceInfo.cameraType),
+                    startOnFrontCamera: this.deviceInfo.cameraType === "front",
                     useManualFrameProcessing: this.sourceInfo.useManualFrameProcessing,
                     onSuccess,
                     onFailure,
@@ -18939,6 +18766,12 @@ class CameraKitSource_CameraKitSource {
                 yield this.subscriber.onAttach(this, lensCore, reportError);
         });
     }
+    /**
+     * Make a copy of the source, sharing the same {@link CameraKitSourceSubscriber}.
+     *
+     * @param deviceInfo Optionally provide new device info for the copy (e.g. to change the camera type).
+     * @returns The new {@link CameraKitSource}
+     */
     copy(deviceInfo = {}) {
         return new CameraKitSource_CameraKitSource(this.sourceInfo, this.subscriber, Object.assign(Object.assign({}, this.deviceInfo), deviceInfo));
     }
@@ -19021,7 +18854,6 @@ const MediaStreamSource_defaultOptions = {
 function closeWorklet(worklet) {
     if (!worklet)
         return;
-    worklet.port.close();
     worklet.port.onmessage = null;
     worklet.disconnect();
 }
@@ -19068,7 +18900,7 @@ function createUserMediaSource(constraints = { video: true }, options = {}) {
  * @param options.transform We apply no transformation by default.
  * @param options.disableSourceAudio By default we pass audio to lens. Settings this to true will disable sending audio
  * to the lens.
- * @param options.cameraType By default we set this to 'user', which is the camera type most Lenses expect.
+ * @param options.cameraType By default we set this to 'front', which is the camera type most Lenses expect.
  * @param options.fpsLimit By default we set no limit on FPS – if the MediaStream has a known FPS setting this limit
  * may prevent CameraKit from using more compute resources than strictly necessary.
  *
@@ -19204,7 +19036,7 @@ const VideoSource_defaultOptions = {
  * @param options
  * @param options.trackingData If pre-computed tracking data exists for this video, it may be provided in order to boost
  * rendering performance (it is not typical or expected for this to be provided).
- * @param options.cameraType By default we set this to 'user', which is the camera type most Lenses expect.
+ * @param options.cameraType By default we set this to 'front', which is the camera type most Lenses expect.
  * @param options.fpsLimit By default we set no limit on FPS – if the video has a known FPS setting this limit
  * may prevent CameraKit from using more compute resources than strictly necessary.
  *
@@ -22524,7 +22356,7 @@ const legalStateFactory = Injectable("legalState", [remoteConfigurationFactory.t
             legalState_logger.error(error);
             return of(defaultLegalPrompt);
         })),
-        initConfig: remoteConfig.getInitializationConfig().pipe(catchError((error) => {
+        initConfig: remoteConfig.getIntializationConfig().pipe(catchError((error) => {
             legalState_logger.error(error);
             return of(defaultInitConfig);
         })),
@@ -22982,10 +22814,10 @@ const lensStateFactory = Injectable("lensState", [
 
 
 const createSessionState = () => {
-    const actions = defineActions(defineAction("suspend")(), defineAction("resume")(), defineAction("destroy")());
-    const states = defineStates(defineState("inactive")(), defineState("active")(), defineState("destroyed")());
+    const actions = defineActions(defineAction("suspend")(), defineAction("resume")());
+    const states = defineStates(defineState("inactive")(), defineState("active")());
     return new StateMachine(actions, states, defineState("inactive")()(), (events) => {
-        return merge(events.pipe(forActions("resume"), map(([a]) => states.active(a.data))), events.pipe(forActions("suspend"), map(() => states.inactive())), events.pipe(forActions("destroy"), map(() => states.destroyed())));
+        return merge(events.pipe(forActions("resume"), map(([a]) => states.active(a.data))), events.pipe(forActions("suspend"), map(() => states.inactive())));
     });
 };
 const sessionStateFactory = Injectable("sessionState", () => createSessionState());
@@ -23454,7 +23286,6 @@ class CameraKitSession {
                 this.lensCore.teardown({ onSuccess: resolve, onFailure: reject });
             });
             this.removePageVisibilityHandlers();
-            this.sessionState.dispatch("destroy", undefined);
         });
     }
     renderTargetToCanvasType(target) {
@@ -23607,1491 +23438,21 @@ const registerLensAssetsProvider = Injectable("registerLensAssetsProvider", [len
     }));
 });
 //# sourceMappingURL=LensAssetsProvider.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/scheduler/Action.js
-
-
-var Action = (function (_super) {
-    __extends(Action, _super);
-    function Action(scheduler, work) {
-        return _super.call(this) || this;
-    }
-    Action.prototype.schedule = function (state, delay) {
-        if (delay === void 0) { delay = 0; }
-        return this;
-    };
-    return Action;
-}(Subscription));
-
-//# sourceMappingURL=Action.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/scheduler/intervalProvider.js
-
-var intervalProvider = {
-    setInterval: function (handler, timeout) {
-        var args = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            args[_i - 2] = arguments[_i];
-        }
-        var delegate = intervalProvider.delegate;
-        if (delegate === null || delegate === void 0 ? void 0 : delegate.setInterval) {
-            return delegate.setInterval.apply(delegate, __spreadArray([handler, timeout], __read(args)));
-        }
-        return setInterval.apply(void 0, __spreadArray([handler, timeout], __read(args)));
-    },
-    clearInterval: function (handle) {
-        var delegate = intervalProvider.delegate;
-        return ((delegate === null || delegate === void 0 ? void 0 : delegate.clearInterval) || clearInterval)(handle);
-    },
-    delegate: undefined,
-};
-//# sourceMappingURL=intervalProvider.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/scheduler/AsyncAction.js
-
-
-
-
-var AsyncAction = (function (_super) {
-    __extends(AsyncAction, _super);
-    function AsyncAction(scheduler, work) {
-        var _this = _super.call(this, scheduler, work) || this;
-        _this.scheduler = scheduler;
-        _this.work = work;
-        _this.pending = false;
-        return _this;
-    }
-    AsyncAction.prototype.schedule = function (state, delay) {
-        var _a;
-        if (delay === void 0) { delay = 0; }
-        if (this.closed) {
-            return this;
-        }
-        this.state = state;
-        var id = this.id;
-        var scheduler = this.scheduler;
-        if (id != null) {
-            this.id = this.recycleAsyncId(scheduler, id, delay);
-        }
-        this.pending = true;
-        this.delay = delay;
-        this.id = (_a = this.id) !== null && _a !== void 0 ? _a : this.requestAsyncId(scheduler, this.id, delay);
-        return this;
-    };
-    AsyncAction.prototype.requestAsyncId = function (scheduler, _id, delay) {
-        if (delay === void 0) { delay = 0; }
-        return intervalProvider.setInterval(scheduler.flush.bind(scheduler, this), delay);
-    };
-    AsyncAction.prototype.recycleAsyncId = function (_scheduler, id, delay) {
-        if (delay === void 0) { delay = 0; }
-        if (delay != null && this.delay === delay && this.pending === false) {
-            return id;
-        }
-        if (id != null) {
-            intervalProvider.clearInterval(id);
-        }
-        return undefined;
-    };
-    AsyncAction.prototype.execute = function (state, delay) {
-        if (this.closed) {
-            return new Error('executing a cancelled action');
-        }
-        this.pending = false;
-        var error = this._execute(state, delay);
-        if (error) {
-            return error;
-        }
-        else if (this.pending === false && this.id != null) {
-            this.id = this.recycleAsyncId(this.scheduler, this.id, null);
-        }
-    };
-    AsyncAction.prototype._execute = function (state, _delay) {
-        var errored = false;
-        var errorValue;
-        try {
-            this.work(state);
-        }
-        catch (e) {
-            errored = true;
-            errorValue = e ? e : new Error('Scheduled action threw falsy error');
-        }
-        if (errored) {
-            this.unsubscribe();
-            return errorValue;
-        }
-    };
-    AsyncAction.prototype.unsubscribe = function () {
-        if (!this.closed) {
-            var _a = this, id = _a.id, scheduler = _a.scheduler;
-            var actions = scheduler.actions;
-            this.work = this.state = this.scheduler = null;
-            this.pending = false;
-            arrRemove(actions, this);
-            if (id != null) {
-                this.id = this.recycleAsyncId(scheduler, id, null);
-            }
-            this.delay = null;
-            _super.prototype.unsubscribe.call(this);
-        }
-    };
-    return AsyncAction;
-}(Action));
-
-//# sourceMappingURL=AsyncAction.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/Scheduler.js
-
-var Scheduler = (function () {
-    function Scheduler(schedulerActionCtor, now) {
-        if (now === void 0) { now = Scheduler.now; }
-        this.schedulerActionCtor = schedulerActionCtor;
-        this.now = now;
-    }
-    Scheduler.prototype.schedule = function (work, delay, state) {
-        if (delay === void 0) { delay = 0; }
-        return new this.schedulerActionCtor(this, work).schedule(state, delay);
-    };
-    Scheduler.now = dateTimestampProvider.now;
-    return Scheduler;
-}());
-
-//# sourceMappingURL=Scheduler.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/scheduler/AsyncScheduler.js
-
-
-var AsyncScheduler = (function (_super) {
-    __extends(AsyncScheduler, _super);
-    function AsyncScheduler(SchedulerAction, now) {
-        if (now === void 0) { now = Scheduler.now; }
-        var _this = _super.call(this, SchedulerAction, now) || this;
-        _this.actions = [];
-        _this._active = false;
-        return _this;
-    }
-    AsyncScheduler.prototype.flush = function (action) {
-        var actions = this.actions;
-        if (this._active) {
-            actions.push(action);
-            return;
-        }
-        var error;
-        this._active = true;
-        do {
-            if ((error = action.execute(action.state, action.delay))) {
-                break;
-            }
-        } while ((action = actions.shift()));
-        this._active = false;
-        if (error) {
-            while ((action = actions.shift())) {
-                action.unsubscribe();
-            }
-            throw error;
-        }
-    };
-    return AsyncScheduler;
-}(Scheduler));
-
-//# sourceMappingURL=AsyncScheduler.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/scheduler/async.js
-
-
-var asyncScheduler = new AsyncScheduler(AsyncAction);
-var async_async = asyncScheduler;
-//# sourceMappingURL=async.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/util/isDate.js
-function isValidDate(value) {
-    return value instanceof Date && !isNaN(value);
-}
-//# sourceMappingURL=isDate.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/observable/timer.js
-
-
-
-
-function timer(dueTime, intervalOrScheduler, scheduler) {
-    if (dueTime === void 0) { dueTime = 0; }
-    if (scheduler === void 0) { scheduler = async_async; }
-    var intervalDuration = -1;
-    if (intervalOrScheduler != null) {
-        if (isScheduler(intervalOrScheduler)) {
-            scheduler = intervalOrScheduler;
-        }
-        else {
-            intervalDuration = intervalOrScheduler;
-        }
-    }
-    return new Observable_Observable(function (subscriber) {
-        var due = isValidDate(dueTime) ? +dueTime - scheduler.now() : dueTime;
-        if (due < 0) {
-            due = 0;
-        }
-        var n = 0;
-        return scheduler.schedule(function () {
-            if (!subscriber.closed) {
-                subscriber.next(n++);
-                if (0 <= intervalDuration) {
-                    this.schedule(undefined, intervalDuration);
-                }
-                else {
-                    subscriber.complete();
-                }
-            }
-        }, due);
-    });
-}
-//# sourceMappingURL=timer.js.map
-;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/operators/retry.js
-
-
-
-
-
-function retry(configOrCount) {
-    if (configOrCount === void 0) { configOrCount = Infinity; }
-    var config;
-    if (configOrCount && typeof configOrCount === 'object') {
-        config = configOrCount;
-    }
-    else {
-        config = {
-            count: configOrCount,
-        };
-    }
-    var _a = config.count, count = _a === void 0 ? Infinity : _a, delay = config.delay, _b = config.resetOnSuccess, resetOnSuccess = _b === void 0 ? false : _b;
-    return count <= 0
-        ? identity_identity
-        : operate(function (source, subscriber) {
-            var soFar = 0;
-            var innerSub;
-            var subscribeForRetry = function () {
-                var syncUnsub = false;
-                innerSub = source.subscribe(createOperatorSubscriber(subscriber, function (value) {
-                    if (resetOnSuccess) {
-                        soFar = 0;
-                    }
-                    subscriber.next(value);
-                }, undefined, function (err) {
-                    if (soFar++ < count) {
-                        var resub_1 = function () {
-                            if (innerSub) {
-                                innerSub.unsubscribe();
-                                innerSub = null;
-                                subscribeForRetry();
-                            }
-                            else {
-                                syncUnsub = true;
-                            }
-                        };
-                        if (delay != null) {
-                            var notifier = typeof delay === 'number' ? timer(delay) : innerFrom_innerFrom(delay(err, soFar));
-                            var notifierSubscriber_1 = createOperatorSubscriber(subscriber, function () {
-                                notifierSubscriber_1.unsubscribe();
-                                resub_1();
-                            }, function () {
-                                subscriber.complete();
-                            });
-                            notifier.subscribe(notifierSubscriber_1);
-                        }
-                        else {
-                            resub_1();
-                        }
-                    }
-                    else {
-                        subscriber.error(err);
-                    }
-                }));
-                if (syncUnsub) {
-                    innerSub.unsubscribe();
-                    innerSub = null;
-                    subscribeForRetry();
-                }
-            };
-            subscribeForRetry();
-        });
-}
-//# sourceMappingURL=retry.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/generated-proto/pb_schema/lenses/remote_api/remote_api_service.js
-
-
-const remote_api_service_protobufPackage = "snapchat.lenses";
-var HttpRequestMethod;
-(function (HttpRequestMethod) {
-    HttpRequestMethod["HTTP_METHOD_UNSET"] = "HTTP_METHOD_UNSET";
-    HttpRequestMethod["HTTP_METHOD_GET"] = "HTTP_METHOD_GET";
-    HttpRequestMethod["HTTP_METHOD_POST"] = "HTTP_METHOD_POST";
-    HttpRequestMethod["HTTP_METHOD_PUT"] = "HTTP_METHOD_PUT";
-    HttpRequestMethod["HTTP_METHOD_DELETE"] = "HTTP_METHOD_DELETE";
-    HttpRequestMethod["HTTP_METHOD_PATCH"] = "HTTP_METHOD_PATCH";
-    HttpRequestMethod["UNRECOGNIZED"] = "UNRECOGNIZED";
-})(HttpRequestMethod || (HttpRequestMethod = {}));
-function httpRequestMethodFromJSON(object) {
-    switch (object) {
-        case 0:
-        case "HTTP_METHOD_UNSET":
-            return HttpRequestMethod.HTTP_METHOD_UNSET;
-        case 1:
-        case "HTTP_METHOD_GET":
-            return HttpRequestMethod.HTTP_METHOD_GET;
-        case 2:
-        case "HTTP_METHOD_POST":
-            return HttpRequestMethod.HTTP_METHOD_POST;
-        case 3:
-        case "HTTP_METHOD_PUT":
-            return HttpRequestMethod.HTTP_METHOD_PUT;
-        case 4:
-        case "HTTP_METHOD_DELETE":
-            return HttpRequestMethod.HTTP_METHOD_DELETE;
-        case 5:
-        case "HTTP_METHOD_PATCH":
-            return HttpRequestMethod.HTTP_METHOD_PATCH;
-        case -1:
-        case "UNRECOGNIZED":
-        default:
-            return HttpRequestMethod.UNRECOGNIZED;
-    }
-}
-function httpRequestMethodToNumber(object) {
-    switch (object) {
-        case HttpRequestMethod.HTTP_METHOD_UNSET:
-            return 0;
-        case HttpRequestMethod.HTTP_METHOD_GET:
-            return 1;
-        case HttpRequestMethod.HTTP_METHOD_POST:
-            return 2;
-        case HttpRequestMethod.HTTP_METHOD_PUT:
-            return 3;
-        case HttpRequestMethod.HTTP_METHOD_DELETE:
-            return 4;
-        case HttpRequestMethod.HTTP_METHOD_PATCH:
-            return 5;
-        default:
-            return 0;
-    }
-}
-var ResponseCode;
-(function (ResponseCode) {
-    ResponseCode["RESPONSE_CODE_UNSET"] = "RESPONSE_CODE_UNSET";
-    ResponseCode["SUCCESS"] = "SUCCESS";
-    ResponseCode["REDIRECTED"] = "REDIRECTED";
-    ResponseCode["BAD_REQUEST"] = "BAD_REQUEST";
-    ResponseCode["ACCESS_DENIED"] = "ACCESS_DENIED";
-    ResponseCode["NOT_FOUND"] = "NOT_FOUND";
-    ResponseCode["TIMEOUT"] = "TIMEOUT";
-    ResponseCode["REQUEST_TOO_LARGE"] = "REQUEST_TOO_LARGE";
-    ResponseCode["SERVER_ERROR"] = "SERVER_ERROR";
-    ResponseCode["CANCELLED"] = "CANCELLED";
-    ResponseCode["PROXY_ERROR"] = "PROXY_ERROR";
-    ResponseCode["UNRECOGNIZED"] = "UNRECOGNIZED";
-})(ResponseCode || (ResponseCode = {}));
-function responseCodeFromJSON(object) {
-    switch (object) {
-        case 0:
-        case "RESPONSE_CODE_UNSET":
-            return ResponseCode.RESPONSE_CODE_UNSET;
-        case 1:
-        case "SUCCESS":
-            return ResponseCode.SUCCESS;
-        case 2:
-        case "REDIRECTED":
-            return ResponseCode.REDIRECTED;
-        case 3:
-        case "BAD_REQUEST":
-            return ResponseCode.BAD_REQUEST;
-        case 4:
-        case "ACCESS_DENIED":
-            return ResponseCode.ACCESS_DENIED;
-        case 5:
-        case "NOT_FOUND":
-            return ResponseCode.NOT_FOUND;
-        case 6:
-        case "TIMEOUT":
-            return ResponseCode.TIMEOUT;
-        case 7:
-        case "REQUEST_TOO_LARGE":
-            return ResponseCode.REQUEST_TOO_LARGE;
-        case 8:
-        case "SERVER_ERROR":
-            return ResponseCode.SERVER_ERROR;
-        case 9:
-        case "CANCELLED":
-            return ResponseCode.CANCELLED;
-        case 10:
-        case "PROXY_ERROR":
-            return ResponseCode.PROXY_ERROR;
-        case -1:
-        case "UNRECOGNIZED":
-        default:
-            return ResponseCode.UNRECOGNIZED;
-    }
-}
-function responseCodeToNumber(object) {
-    switch (object) {
-        case ResponseCode.RESPONSE_CODE_UNSET:
-            return 0;
-        case ResponseCode.SUCCESS:
-            return 1;
-        case ResponseCode.REDIRECTED:
-            return 2;
-        case ResponseCode.BAD_REQUEST:
-            return 3;
-        case ResponseCode.ACCESS_DENIED:
-            return 4;
-        case ResponseCode.NOT_FOUND:
-            return 5;
-        case ResponseCode.TIMEOUT:
-            return 6;
-        case ResponseCode.REQUEST_TOO_LARGE:
-            return 7;
-        case ResponseCode.SERVER_ERROR:
-            return 8;
-        case ResponseCode.CANCELLED:
-            return 9;
-        case ResponseCode.PROXY_ERROR:
-            return 10;
-        default:
-            return 0;
-    }
-}
-var GetOAuth2InfoResponse_GrantType;
-(function (GetOAuth2InfoResponse_GrantType) {
-    GetOAuth2InfoResponse_GrantType["GRANT_TYPE_UNSET"] = "GRANT_TYPE_UNSET";
-    GetOAuth2InfoResponse_GrantType["AUTHORIZATION_CODE"] = "AUTHORIZATION_CODE";
-    GetOAuth2InfoResponse_GrantType["AUTHORIZATION_CODE_WITH_PKCE"] = "AUTHORIZATION_CODE_WITH_PKCE";
-    GetOAuth2InfoResponse_GrantType["IMPLICIT"] = "IMPLICIT";
-    GetOAuth2InfoResponse_GrantType["CLIENT_CREDENTIALS"] = "CLIENT_CREDENTIALS";
-    GetOAuth2InfoResponse_GrantType["UNRECOGNIZED"] = "UNRECOGNIZED";
-})(GetOAuth2InfoResponse_GrantType || (GetOAuth2InfoResponse_GrantType = {}));
-function getOAuth2InfoResponse_GrantTypeFromJSON(object) {
-    switch (object) {
-        case 0:
-        case "GRANT_TYPE_UNSET":
-            return GetOAuth2InfoResponse_GrantType.GRANT_TYPE_UNSET;
-        case 1:
-        case "AUTHORIZATION_CODE":
-            return GetOAuth2InfoResponse_GrantType.AUTHORIZATION_CODE;
-        case 2:
-        case "AUTHORIZATION_CODE_WITH_PKCE":
-            return GetOAuth2InfoResponse_GrantType.AUTHORIZATION_CODE_WITH_PKCE;
-        case 3:
-        case "IMPLICIT":
-            return GetOAuth2InfoResponse_GrantType.IMPLICIT;
-        case 4:
-        case "CLIENT_CREDENTIALS":
-            return GetOAuth2InfoResponse_GrantType.CLIENT_CREDENTIALS;
-        case -1:
-        case "UNRECOGNIZED":
-        default:
-            return GetOAuth2InfoResponse_GrantType.UNRECOGNIZED;
-    }
-}
-function getOAuth2InfoResponse_GrantTypeToNumber(object) {
-    switch (object) {
-        case GetOAuth2InfoResponse_GrantType.GRANT_TYPE_UNSET:
-            return 0;
-        case GetOAuth2InfoResponse_GrantType.AUTHORIZATION_CODE:
-            return 1;
-        case GetOAuth2InfoResponse_GrantType.AUTHORIZATION_CODE_WITH_PKCE:
-            return 2;
-        case GetOAuth2InfoResponse_GrantType.IMPLICIT:
-            return 3;
-        case GetOAuth2InfoResponse_GrantType.CLIENT_CREDENTIALS:
-            return 4;
-        default:
-            return 0;
-    }
-}
-var TokenExchangeError_TokenExchangeErrorType;
-(function (TokenExchangeError_TokenExchangeErrorType) {
-    TokenExchangeError_TokenExchangeErrorType["ERROR_TYPE_UNSET"] = "ERROR_TYPE_UNSET";
-    TokenExchangeError_TokenExchangeErrorType["INVALID_REQUEST"] = "INVALID_REQUEST";
-    TokenExchangeError_TokenExchangeErrorType["INVALID_CLIENT"] = "INVALID_CLIENT";
-    TokenExchangeError_TokenExchangeErrorType["INVALID_GRANT"] = "INVALID_GRANT";
-    TokenExchangeError_TokenExchangeErrorType["UNAUTHORIZED_CLIENT"] = "UNAUTHORIZED_CLIENT";
-    TokenExchangeError_TokenExchangeErrorType["UNSUPPORTED_GRANT_TYPE"] = "UNSUPPORTED_GRANT_TYPE";
-    TokenExchangeError_TokenExchangeErrorType["INVALID_SCOPE"] = "INVALID_SCOPE";
-    TokenExchangeError_TokenExchangeErrorType["UNRECOGNIZED"] = "UNRECOGNIZED";
-})(TokenExchangeError_TokenExchangeErrorType || (TokenExchangeError_TokenExchangeErrorType = {}));
-function tokenExchangeError_TokenExchangeErrorTypeFromJSON(object) {
-    switch (object) {
-        case 0:
-        case "ERROR_TYPE_UNSET":
-            return TokenExchangeError_TokenExchangeErrorType.ERROR_TYPE_UNSET;
-        case 1:
-        case "INVALID_REQUEST":
-            return TokenExchangeError_TokenExchangeErrorType.INVALID_REQUEST;
-        case 2:
-        case "INVALID_CLIENT":
-            return TokenExchangeError_TokenExchangeErrorType.INVALID_CLIENT;
-        case 3:
-        case "INVALID_GRANT":
-            return TokenExchangeError_TokenExchangeErrorType.INVALID_GRANT;
-        case 4:
-        case "UNAUTHORIZED_CLIENT":
-            return TokenExchangeError_TokenExchangeErrorType.UNAUTHORIZED_CLIENT;
-        case 5:
-        case "UNSUPPORTED_GRANT_TYPE":
-            return TokenExchangeError_TokenExchangeErrorType.UNSUPPORTED_GRANT_TYPE;
-        case 6:
-        case "INVALID_SCOPE":
-            return TokenExchangeError_TokenExchangeErrorType.INVALID_SCOPE;
-        case -1:
-        case "UNRECOGNIZED":
-        default:
-            return TokenExchangeError_TokenExchangeErrorType.UNRECOGNIZED;
-    }
-}
-function tokenExchangeError_TokenExchangeErrorTypeToNumber(object) {
-    switch (object) {
-        case TokenExchangeError_TokenExchangeErrorType.ERROR_TYPE_UNSET:
-            return 0;
-        case TokenExchangeError_TokenExchangeErrorType.INVALID_REQUEST:
-            return 1;
-        case TokenExchangeError_TokenExchangeErrorType.INVALID_CLIENT:
-            return 2;
-        case TokenExchangeError_TokenExchangeErrorType.INVALID_GRANT:
-            return 3;
-        case TokenExchangeError_TokenExchangeErrorType.UNAUTHORIZED_CLIENT:
-            return 4;
-        case TokenExchangeError_TokenExchangeErrorType.UNSUPPORTED_GRANT_TYPE:
-            return 5;
-        case TokenExchangeError_TokenExchangeErrorType.INVALID_SCOPE:
-            return 6;
-        default:
-            return 0;
-    }
-}
-function createBasePerformHttpCallRequest() {
-    return {
-        url: "",
-        method: HttpRequestMethod.HTTP_METHOD_UNSET,
-        headers: {},
-        body: new Uint8Array(),
-        apiSpecId: "",
-        isStudioDev: false,
-    };
-}
-const PerformHttpCallRequest = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.url !== "") {
-            writer.uint32(10).string(message.url);
-        }
-        if (message.method !== HttpRequestMethod.HTTP_METHOD_UNSET) {
-            writer.uint32(16).int32(httpRequestMethodToNumber(message.method));
-        }
-        Object.entries(message.headers).forEach(([key, value]) => {
-            PerformHttpCallRequest_HeadersEntry.encode({ key: key, value }, writer.uint32(26).fork()).ldelim();
-        });
-        if (message.body.length !== 0) {
-            writer.uint32(34).bytes(message.body);
-        }
-        if (message.apiSpecId !== "") {
-            writer.uint32(42).string(message.apiSpecId);
-        }
-        if (message.isStudioDev === true) {
-            writer.uint32(48).bool(message.isStudioDev);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformHttpCallRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.url = reader.string();
-                    break;
-                case 2:
-                    message.method = httpRequestMethodFromJSON(reader.int32());
-                    break;
-                case 3:
-                    const entry3 = PerformHttpCallRequest_HeadersEntry.decode(reader, reader.uint32());
-                    if (entry3.value !== undefined) {
-                        message.headers[entry3.key] = entry3.value;
-                    }
-                    break;
-                case 4:
-                    message.body = reader.bytes();
-                    break;
-                case 5:
-                    message.apiSpecId = reader.string();
-                    break;
-                case 6:
-                    message.isStudioDev = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f;
-        const message = createBasePerformHttpCallRequest();
-        message.url = (_a = object.url) !== null && _a !== void 0 ? _a : "";
-        message.method = (_b = object.method) !== null && _b !== void 0 ? _b : HttpRequestMethod.HTTP_METHOD_UNSET;
-        message.headers = Object.entries((_c = object.headers) !== null && _c !== void 0 ? _c : {}).reduce((acc, [key, value]) => {
-            if (value !== undefined) {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {});
-        message.body = (_d = object.body) !== null && _d !== void 0 ? _d : new Uint8Array();
-        message.apiSpecId = (_e = object.apiSpecId) !== null && _e !== void 0 ? _e : "";
-        message.isStudioDev = (_f = object.isStudioDev) !== null && _f !== void 0 ? _f : false;
-        return message;
-    },
-};
-function createBasePerformHttpCallRequest_HeadersEntry() {
-    return { key: "", value: "" };
-}
-const PerformHttpCallRequest_HeadersEntry = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== "") {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformHttpCallRequest_HeadersEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.key = reader.string();
-                    break;
-                case 2:
-                    message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBasePerformHttpCallRequest_HeadersEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : "";
-        return message;
-    },
-};
-function createBasePerformHttpCallResponse() {
-    return { code: 0, headers: {}, body: new Uint8Array() };
-}
-const PerformHttpCallResponse = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.code !== 0) {
-            writer.uint32(8).int32(message.code);
-        }
-        Object.entries(message.headers).forEach(([key, value]) => {
-            PerformHttpCallResponse_HeadersEntry.encode({ key: key, value }, writer.uint32(18).fork()).ldelim();
-        });
-        if (message.body.length !== 0) {
-            writer.uint32(26).bytes(message.body);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformHttpCallResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.code = reader.int32();
-                    break;
-                case 2:
-                    const entry2 = PerformHttpCallResponse_HeadersEntry.decode(reader, reader.uint32());
-                    if (entry2.value !== undefined) {
-                        message.headers[entry2.key] = entry2.value;
-                    }
-                    break;
-                case 3:
-                    message.body = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c;
-        const message = createBasePerformHttpCallResponse();
-        message.code = (_a = object.code) !== null && _a !== void 0 ? _a : 0;
-        message.headers = Object.entries((_b = object.headers) !== null && _b !== void 0 ? _b : {}).reduce((acc, [key, value]) => {
-            if (value !== undefined) {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {});
-        message.body = (_c = object.body) !== null && _c !== void 0 ? _c : new Uint8Array();
-        return message;
-    },
-};
-function createBasePerformHttpCallResponse_HeadersEntry() {
-    return { key: "", value: "" };
-}
-const PerformHttpCallResponse_HeadersEntry = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== "") {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformHttpCallResponse_HeadersEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.key = reader.string();
-                    break;
-                case 2:
-                    message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBasePerformHttpCallResponse_HeadersEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : "";
-        return message;
-    },
-};
-function createBaseGetOAuth2InfoRequest() {
-    return { apiSpecId: "" };
-}
-const GetOAuth2InfoRequest = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.apiSpecId !== "") {
-            writer.uint32(10).string(message.apiSpecId);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseGetOAuth2InfoRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.apiSpecId = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a;
-        const message = createBaseGetOAuth2InfoRequest();
-        message.apiSpecId = (_a = object.apiSpecId) !== null && _a !== void 0 ? _a : "";
-        return message;
-    },
-};
-function createBaseGetOAuth2InfoResponse() {
-    return { clientId: "", grantType: GetOAuth2InfoResponse_GrantType.GRANT_TYPE_UNSET, authorizationUrl: "", scope: "" };
-}
-const GetOAuth2InfoResponse = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.clientId !== "") {
-            writer.uint32(10).string(message.clientId);
-        }
-        if (message.grantType !== GetOAuth2InfoResponse_GrantType.GRANT_TYPE_UNSET) {
-            writer.uint32(16).int32(getOAuth2InfoResponse_GrantTypeToNumber(message.grantType));
-        }
-        if (message.authorizationUrl !== "") {
-            writer.uint32(26).string(message.authorizationUrl);
-        }
-        if (message.scope !== "") {
-            writer.uint32(34).string(message.scope);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseGetOAuth2InfoResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.clientId = reader.string();
-                    break;
-                case 2:
-                    message.grantType = getOAuth2InfoResponse_GrantTypeFromJSON(reader.int32());
-                    break;
-                case 3:
-                    message.authorizationUrl = reader.string();
-                    break;
-                case 4:
-                    message.scope = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d;
-        const message = createBaseGetOAuth2InfoResponse();
-        message.clientId = (_a = object.clientId) !== null && _a !== void 0 ? _a : "";
-        message.grantType = (_b = object.grantType) !== null && _b !== void 0 ? _b : GetOAuth2InfoResponse_GrantType.GRANT_TYPE_UNSET;
-        message.authorizationUrl = (_c = object.authorizationUrl) !== null && _c !== void 0 ? _c : "";
-        message.scope = (_d = object.scope) !== null && _d !== void 0 ? _d : "";
-        return message;
-    },
-};
-function createBaseTokenExchangeError() {
-    return { error: TokenExchangeError_TokenExchangeErrorType.ERROR_TYPE_UNSET, errorDescription: "" };
-}
-const TokenExchangeError = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.error !== TokenExchangeError_TokenExchangeErrorType.ERROR_TYPE_UNSET) {
-            writer.uint32(8).int32(tokenExchangeError_TokenExchangeErrorTypeToNumber(message.error));
-        }
-        if (message.errorDescription !== "") {
-            writer.uint32(18).string(message.errorDescription);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseTokenExchangeError();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.error = tokenExchangeError_TokenExchangeErrorTypeFromJSON(reader.int32());
-                    break;
-                case 2:
-                    message.errorDescription = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBaseTokenExchangeError();
-        message.error = (_a = object.error) !== null && _a !== void 0 ? _a : TokenExchangeError_TokenExchangeErrorType.ERROR_TYPE_UNSET;
-        message.errorDescription = (_b = object.errorDescription) !== null && _b !== void 0 ? _b : "";
-        return message;
-    },
-};
-function createBaseTokenDetails() {
-    return { accessToken: "", tokenType: "", expiresInSeconds: 0, refreshToken: "", scope: "" };
-}
-const TokenDetails = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.accessToken !== "") {
-            writer.uint32(10).string(message.accessToken);
-        }
-        if (message.tokenType !== "") {
-            writer.uint32(18).string(message.tokenType);
-        }
-        if (message.expiresInSeconds !== 0) {
-            writer.uint32(24).int64(message.expiresInSeconds);
-        }
-        if (message.refreshToken !== "") {
-            writer.uint32(34).string(message.refreshToken);
-        }
-        if (message.scope !== "") {
-            writer.uint32(42).string(message.scope);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseTokenDetails();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.accessToken = reader.string();
-                    break;
-                case 2:
-                    message.tokenType = reader.string();
-                    break;
-                case 3:
-                    message.expiresInSeconds = remote_api_service_longToNumber(reader.int64());
-                    break;
-                case 4:
-                    message.refreshToken = reader.string();
-                    break;
-                case 5:
-                    message.scope = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d, _e;
-        const message = createBaseTokenDetails();
-        message.accessToken = (_a = object.accessToken) !== null && _a !== void 0 ? _a : "";
-        message.tokenType = (_b = object.tokenType) !== null && _b !== void 0 ? _b : "";
-        message.expiresInSeconds = (_c = object.expiresInSeconds) !== null && _c !== void 0 ? _c : 0;
-        message.refreshToken = (_d = object.refreshToken) !== null && _d !== void 0 ? _d : "";
-        message.scope = (_e = object.scope) !== null && _e !== void 0 ? _e : "";
-        return message;
-    },
-};
-function createBasePerformTokenExchangeRequest() {
-    return { apiSpecId: "", authorizationCode: "", codeVerifier: "" };
-}
-const PerformTokenExchangeRequest = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.apiSpecId !== "") {
-            writer.uint32(10).string(message.apiSpecId);
-        }
-        if (message.authorizationCode !== "") {
-            writer.uint32(18).string(message.authorizationCode);
-        }
-        if (message.codeVerifier !== "") {
-            writer.uint32(26).string(message.codeVerifier);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformTokenExchangeRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.apiSpecId = reader.string();
-                    break;
-                case 2:
-                    message.authorizationCode = reader.string();
-                    break;
-                case 3:
-                    message.codeVerifier = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c;
-        const message = createBasePerformTokenExchangeRequest();
-        message.apiSpecId = (_a = object.apiSpecId) !== null && _a !== void 0 ? _a : "";
-        message.authorizationCode = (_b = object.authorizationCode) !== null && _b !== void 0 ? _b : "";
-        message.codeVerifier = (_c = object.codeVerifier) !== null && _c !== void 0 ? _c : "";
-        return message;
-    },
-};
-function createBasePerformTokenExchangeResponse() {
-    return { response: undefined };
-}
-const PerformTokenExchangeResponse = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        var _a, _b;
-        if (((_a = message.response) === null || _a === void 0 ? void 0 : _a.$case) === "tokenDetails") {
-            TokenDetails.encode(message.response.tokenDetails, writer.uint32(10).fork()).ldelim();
-        }
-        if (((_b = message.response) === null || _b === void 0 ? void 0 : _b.$case) === "error") {
-            TokenExchangeError.encode(message.response.error, writer.uint32(18).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformTokenExchangeResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.response = { $case: "tokenDetails", tokenDetails: TokenDetails.decode(reader, reader.uint32()) };
-                    break;
-                case 2:
-                    message.response = { $case: "error", error: TokenExchangeError.decode(reader, reader.uint32()) };
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f;
-        const message = createBasePerformTokenExchangeResponse();
-        if (((_a = object.response) === null || _a === void 0 ? void 0 : _a.$case) === "tokenDetails" &&
-            ((_b = object.response) === null || _b === void 0 ? void 0 : _b.tokenDetails) !== undefined &&
-            ((_c = object.response) === null || _c === void 0 ? void 0 : _c.tokenDetails) !== null) {
-            message.response = {
-                $case: "tokenDetails",
-                tokenDetails: TokenDetails.fromPartial(object.response.tokenDetails),
-            };
-        }
-        if (((_d = object.response) === null || _d === void 0 ? void 0 : _d.$case) === "error" && ((_e = object.response) === null || _e === void 0 ? void 0 : _e.error) !== undefined && ((_f = object.response) === null || _f === void 0 ? void 0 : _f.error) !== null) {
-            message.response = { $case: "error", error: TokenExchangeError.fromPartial(object.response.error) };
-        }
-        return message;
-    },
-};
-function createBaseRefreshTokenRequest() {
-    return { apiSpecId: "", refreshToken: "" };
-}
-const RefreshTokenRequest = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.apiSpecId !== "") {
-            writer.uint32(10).string(message.apiSpecId);
-        }
-        if (message.refreshToken !== "") {
-            writer.uint32(18).string(message.refreshToken);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseRefreshTokenRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.apiSpecId = reader.string();
-                    break;
-                case 2:
-                    message.refreshToken = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBaseRefreshTokenRequest();
-        message.apiSpecId = (_a = object.apiSpecId) !== null && _a !== void 0 ? _a : "";
-        message.refreshToken = (_b = object.refreshToken) !== null && _b !== void 0 ? _b : "";
-        return message;
-    },
-};
-function createBaseRefreshTokenResponse() {
-    return { response: undefined };
-}
-const RefreshTokenResponse = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        var _a, _b;
-        if (((_a = message.response) === null || _a === void 0 ? void 0 : _a.$case) === "tokenDetails") {
-            TokenDetails.encode(message.response.tokenDetails, writer.uint32(10).fork()).ldelim();
-        }
-        if (((_b = message.response) === null || _b === void 0 ? void 0 : _b.$case) === "error") {
-            TokenExchangeError.encode(message.response.error, writer.uint32(18).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseRefreshTokenResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.response = { $case: "tokenDetails", tokenDetails: TokenDetails.decode(reader, reader.uint32()) };
-                    break;
-                case 2:
-                    message.response = { $case: "error", error: TokenExchangeError.decode(reader, reader.uint32()) };
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f;
-        const message = createBaseRefreshTokenResponse();
-        if (((_a = object.response) === null || _a === void 0 ? void 0 : _a.$case) === "tokenDetails" &&
-            ((_b = object.response) === null || _b === void 0 ? void 0 : _b.tokenDetails) !== undefined &&
-            ((_c = object.response) === null || _c === void 0 ? void 0 : _c.tokenDetails) !== null) {
-            message.response = {
-                $case: "tokenDetails",
-                tokenDetails: TokenDetails.fromPartial(object.response.tokenDetails),
-            };
-        }
-        if (((_d = object.response) === null || _d === void 0 ? void 0 : _d.$case) === "error" && ((_e = object.response) === null || _e === void 0 ? void 0 : _e.error) !== undefined && ((_f = object.response) === null || _f === void 0 ? void 0 : _f.error) !== null) {
-            message.response = { $case: "error", error: TokenExchangeError.fromPartial(object.response.error) };
-        }
-        return message;
-    },
-};
-function createBasePerformApiCallRequest() {
-    return {
-        apiSpecSetId: "",
-        endpointRefId: "",
-        parameters: {},
-        body: new Uint8Array(),
-        lensId: "",
-        isStudioDev: false,
-        cacheTtlSec: 0,
-        linkedResources: [],
-    };
-}
-const PerformApiCallRequest = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.apiSpecSetId !== "") {
-            writer.uint32(10).string(message.apiSpecSetId);
-        }
-        if (message.endpointRefId !== "") {
-            writer.uint32(18).string(message.endpointRefId);
-        }
-        Object.entries(message.parameters).forEach(([key, value]) => {
-            PerformApiCallRequest_ParametersEntry.encode({ key: key, value }, writer.uint32(26).fork()).ldelim();
-        });
-        if (message.body.length !== 0) {
-            writer.uint32(34).bytes(message.body);
-        }
-        if (message.lensId !== "") {
-            writer.uint32(42).string(message.lensId);
-        }
-        if (message.isStudioDev === true) {
-            writer.uint32(48).bool(message.isStudioDev);
-        }
-        if (message.cacheTtlSec !== 0) {
-            writer.uint32(56).int32(message.cacheTtlSec);
-        }
-        for (const v of message.linkedResources) {
-            LinkedResource.encode(v, writer.uint32(66).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformApiCallRequest();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.apiSpecSetId = reader.string();
-                    break;
-                case 2:
-                    message.endpointRefId = reader.string();
-                    break;
-                case 3:
-                    const entry3 = PerformApiCallRequest_ParametersEntry.decode(reader, reader.uint32());
-                    if (entry3.value !== undefined) {
-                        message.parameters[entry3.key] = entry3.value;
-                    }
-                    break;
-                case 4:
-                    message.body = reader.bytes();
-                    break;
-                case 5:
-                    message.lensId = reader.string();
-                    break;
-                case 6:
-                    message.isStudioDev = reader.bool();
-                    break;
-                case 7:
-                    message.cacheTtlSec = reader.int32();
-                    break;
-                case 8:
-                    message.linkedResources.push(LinkedResource.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
-        const message = createBasePerformApiCallRequest();
-        message.apiSpecSetId = (_a = object.apiSpecSetId) !== null && _a !== void 0 ? _a : "";
-        message.endpointRefId = (_b = object.endpointRefId) !== null && _b !== void 0 ? _b : "";
-        message.parameters = Object.entries((_c = object.parameters) !== null && _c !== void 0 ? _c : {}).reduce((acc, [key, value]) => {
-            if (value !== undefined) {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {});
-        message.body = (_d = object.body) !== null && _d !== void 0 ? _d : new Uint8Array();
-        message.lensId = (_e = object.lensId) !== null && _e !== void 0 ? _e : "";
-        message.isStudioDev = (_f = object.isStudioDev) !== null && _f !== void 0 ? _f : false;
-        message.cacheTtlSec = (_g = object.cacheTtlSec) !== null && _g !== void 0 ? _g : 0;
-        message.linkedResources = ((_h = object.linkedResources) === null || _h === void 0 ? void 0 : _h.map((e) => LinkedResource.fromPartial(e))) || [];
-        return message;
-    },
-};
-function createBasePerformApiCallRequest_ParametersEntry() {
-    return { key: "", value: "" };
-}
-const PerformApiCallRequest_ParametersEntry = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== "") {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformApiCallRequest_ParametersEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.key = reader.string();
-                    break;
-                case 2:
-                    message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBasePerformApiCallRequest_ParametersEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : "";
-        return message;
-    },
-};
-function createBasePerformApiCallResponse() {
-    return {
-        responseCode: ResponseCode.RESPONSE_CODE_UNSET,
-        metadata: {},
-        body: new Uint8Array(),
-        userLocationUsed: false,
-        linkedResources: [],
-    };
-}
-const PerformApiCallResponse = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.responseCode !== ResponseCode.RESPONSE_CODE_UNSET) {
-            writer.uint32(8).int32(responseCodeToNumber(message.responseCode));
-        }
-        Object.entries(message.metadata).forEach(([key, value]) => {
-            PerformApiCallResponse_MetadataEntry.encode({ key: key, value }, writer.uint32(18).fork()).ldelim();
-        });
-        if (message.body.length !== 0) {
-            writer.uint32(26).bytes(message.body);
-        }
-        if (message.userLocationUsed === true) {
-            writer.uint32(32).bool(message.userLocationUsed);
-        }
-        for (const v of message.linkedResources) {
-            LinkedResource.encode(v, writer.uint32(42).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformApiCallResponse();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.responseCode = responseCodeFromJSON(reader.int32());
-                    break;
-                case 2:
-                    const entry2 = PerformApiCallResponse_MetadataEntry.decode(reader, reader.uint32());
-                    if (entry2.value !== undefined) {
-                        message.metadata[entry2.key] = entry2.value;
-                    }
-                    break;
-                case 3:
-                    message.body = reader.bytes();
-                    break;
-                case 4:
-                    message.userLocationUsed = reader.bool();
-                    break;
-                case 5:
-                    message.linkedResources.push(LinkedResource.decode(reader, reader.uint32()));
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b, _c, _d, _e;
-        const message = createBasePerformApiCallResponse();
-        message.responseCode = (_a = object.responseCode) !== null && _a !== void 0 ? _a : ResponseCode.RESPONSE_CODE_UNSET;
-        message.metadata = Object.entries((_b = object.metadata) !== null && _b !== void 0 ? _b : {}).reduce((acc, [key, value]) => {
-            if (value !== undefined) {
-                acc[key] = String(value);
-            }
-            return acc;
-        }, {});
-        message.body = (_c = object.body) !== null && _c !== void 0 ? _c : new Uint8Array();
-        message.userLocationUsed = (_d = object.userLocationUsed) !== null && _d !== void 0 ? _d : false;
-        message.linkedResources = ((_e = object.linkedResources) === null || _e === void 0 ? void 0 : _e.map((e) => LinkedResource.fromPartial(e))) || [];
-        return message;
-    },
-};
-function createBasePerformApiCallResponse_MetadataEntry() {
-    return { key: "", value: "" };
-}
-const PerformApiCallResponse_MetadataEntry = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== "") {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasePerformApiCallResponse_MetadataEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.key = reader.string();
-                    break;
-                case 2:
-                    message.value = reader.string();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBasePerformApiCallResponse_MetadataEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : "";
-        return message;
-    },
-};
-function createBaseLinkedResource() {
-    return { url: "", encryptionKey: new Uint8Array() };
-}
-const LinkedResource = {
-    encode(message, writer = minimal_default().Writer.create()) {
-        if (message.url !== "") {
-            writer.uint32(10).string(message.url);
-        }
-        if (message.encryptionKey.length !== 0) {
-            writer.uint32(18).bytes(message.encryptionKey);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof (minimal_default()).Reader ? input : new (minimal_default()).Reader(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseLinkedResource();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    message.url = reader.string();
-                    break;
-                case 2:
-                    message.encryptionKey = reader.bytes();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-            }
-        }
-        return message;
-    },
-    fromPartial(object) {
-        var _a, _b;
-        const message = createBaseLinkedResource();
-        message.url = (_a = object.url) !== null && _a !== void 0 ? _a : "";
-        message.encryptionKey = (_b = object.encryptionKey) !== null && _b !== void 0 ? _b : new Uint8Array();
-        return message;
-    },
-};
-var remote_api_service_globalThis = (() => {
-    if (typeof remote_api_service_globalThis !== "undefined")
-        return remote_api_service_globalThis;
-    if (typeof self !== "undefined")
-        return self;
-    if (typeof window !== "undefined")
-        return window;
-    if (typeof __webpack_require__.g !== "undefined")
-        return __webpack_require__.g;
-    throw "Unable to locate global object";
-})();
-function remote_api_service_longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new remote_api_service_globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-    }
-    return long.toNumber();
-}
-if ((minimal_default()).util.Long !== (long_default())) {
-    (minimal_default()).util.Long = (long_default());
-    minimal_default().configure();
-}
-//# sourceMappingURL=remote_api_service.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/extensions/UriHandlers.js
 
 
+
+
+
+
+
+const UriHandlers_logger = getLogger("UriHandlers");
 const SEPARATOR = "://";
 function extractSchemeAndRoute(uri) {
     const separatorIndex = uri.indexOf(SEPARATOR);
     const scheme = uri.slice(0, separatorIndex);
     const route = uri.slice(separatorIndex + SEPARATOR.length);
-    return { scheme, route };
+    return [scheme, route];
 }
 function isUri(value) {
     return isString(value) && value.includes(SEPARATOR);
@@ -25115,248 +23476,25 @@ function isUriResponse(value) {
 }
 /**
  * An extension point for client URI handlers.
- * @internal
  */
 const uriHandlersFactory = Injectable("UriHandlers", () => {
     const uriHandlers = [];
     return uriHandlers;
 });
-//# sourceMappingURL=UriHandlers.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/extensions/RemoteApiServices.js
-
-
-
-
-
-
-
-
-// NOTE: There's potential for overloads when reporting metrics if reporting is triggered on each frame,
-// (i.e., when the lens sends Remote API requests every frame).
-// As of now, this isn't a concern because src/metrics/operational/operationalMetricsReporter.ts aggregates
-// "count" metrics into a single metric within a batch, and the Remote API service currently
-// reports only "count" metrics. For instance, if 30 metrics with the same name are generated per second,
-// given the current bundle size of 100 operational metrics, there will be one metrics report approximately
-// every 3.3 seconds.
-// In the future, if we opt to report "histogram" or other metric types, they must be approached with caution:
-// either the operationalMetricsReporter should be enhanced to aggregate such metrics,
-// or the Remote API service should manage it directly.
-// Mobiles ticket: https://jira.sc-corp.net/browse/CAMKIT-3092
-const RemoteApiServices_logger = getLogger("RemoteApiServices");
-const uriResponseOkCode = 200;
-const apiResponseStatusHeader = ":sc_lens_api_status";
-const apiBinaryContentType = "application/octet-stream";
-const statusToResponseCodeMap = {
-    success: ResponseCode.SUCCESS,
-    redirected: ResponseCode.REDIRECTED,
-    badRequest: ResponseCode.BAD_REQUEST,
-    accessDenied: ResponseCode.ACCESS_DENIED,
-    notFound: ResponseCode.NOT_FOUND,
-    timeout: ResponseCode.TIMEOUT,
-    requestTooLarge: ResponseCode.REQUEST_TOO_LARGE,
-    serverError: ResponseCode.SERVER_ERROR,
-    cancelled: ResponseCode.CANCELLED,
-    proxyError: ResponseCode.PROXY_ERROR,
-};
-/**
- * Invokes the cancellation handler associated with the provided key and removes it from the collection of handlers.
- */
-function callCancellationHandler(cancellationHandlers, ...keys) {
-    var _a;
-    for (const key of keys) {
-        (_a = cancellationHandlers.get(key)) === null || _a === void 0 ? void 0 : _a();
-        cancellationHandlers.delete(key);
-    }
-}
-/**
- * Removes the specified lenses' metadata from the cache and invokes their cancellation callbacks.
- *
- * @param lensRequestState The state representing the lens cache.
- * @param lensIds An array of lens IDs to be removed from the cache
- * and for which the cancellation callbacks will be invoked.
- */
-function handleLensApplicationEnd(lensRequestState, ...lensIds) {
-    for (const lensId of lensIds) {
-        const state = lensRequestState.get(lensId);
-        if (state) {
-            callCancellationHandler(state.cancellationHandlers, ...state.cancellationHandlers.keys());
-            lensRequestState.delete(lensId);
-        }
-    }
-}
-const remoteApiServicesFactory = Injectable("remoteApiServices", () => {
-    const remoteApiServices = [];
-    return remoteApiServices;
-});
-/**
- * Provides a URI handler that searches for a match within the provided services to handle Remote API requests,
- * i.e., those whose URI starts with 'app://remote-api/performApiRequest'.
- */
-function getRemoteApiUriHandler(registeredServices, sessionState, lensState, lensRepository, reporter) {
-    // Groups services by spec ID for faster lookups.
-    const registeredServiceMap = new Map();
-    for (const service of registeredServices) {
-        const existingServices = registeredServiceMap.get(service.apiSpecId) || [];
-        registeredServiceMap.set(service.apiSpecId, [...existingServices, service]);
-    }
-    const uriRequests = new Subject();
-    const uriCancelRequests = new Subject();
-    const lensRequestState = new Map();
-    const lensTurnOffEvents = lensState.events.pipe(forActions("turnedOff"), tap(([action]) => handleLensApplicationEnd(lensRequestState, action.data.id)));
-    const uriRequestEvents = uriRequests.pipe(map((uriRequest) => {
-        var _a, _b;
-        const lensId = uriRequest.lens.id;
-        if (!lensRequestState.has(lensId)) {
-            lensRequestState.set(lensId, {
-                // Prepares a collection to store cancellation handlers.
-                // A specific handler will be invoked when a cancellation request is issued by the lens.
-                // All handlers will be invoked when the lens is replaced with another one or the session
-                // is destroyed.
-                cancellationHandlers: new Map(),
-                // Parse lens metadata to obtain supported Remote API specs.
-                supportedSpecIds: new Set(((_b = (_a = lensRepository.getLensMetadata(lensId)) === null || _a === void 0 ? void 0 : _a.featureMetadata) !== null && _b !== void 0 ? _b : [])
-                    .filter((feature) => feature.typeUrl === knownAnyTypes.remoteApiInfo)
-                    .flatMap((any) => RemoteApiInfo.decode(any.value).apiSpecIds)),
-            });
-        }
-        const requestState = lensRequestState.get(lensId);
-        // Extracts the spec ID and endpoint ID from the provided Remote API request URI.
-        // The given URI is expected to conform to the following specification:
-        // eslint-disable-next-line max-len
-        // https://docs.google.com/document/d/18fbGYDhD2N_aMTe4ZLY4QKeCSoMeJuklG28TutDzLZc/edit#bookmark=id.p2y39gwgbm4g
-        const { route } = extractSchemeAndRoute(uriRequest.request.uri);
-        const [specId, endpointIdWithQuery] = route.split("/").slice(2);
-        const [endpointId] = endpointIdWithQuery.split("?");
-        return { uriRequest, specId, endpointId, requestState };
-    }), 
-    // only handle requests for API spec ID that current lens supports
-    filter(({ specId, requestState }) => requestState.supportedSpecIds.has(specId)), 
-    // only handle requests if we have a registered service for it
-    filter(({ specId }) => registeredServiceMap.has(specId)), map(({ uriRequest, specId, endpointId, requestState }) => {
-        var _a;
-        const dimensions = new Map([["specId", specId]]);
-        reporter.count("lens_remote-api_requests", 1, dimensions);
-        const remoteApiRequest = {
-            apiSpecId: specId,
-            body: uriRequest.request.data,
-            endpointId,
-            parameters: uriRequest.request.metadata,
-        };
-        // Looks for the first Remote API request handler.
-        for (const service of (_a = registeredServiceMap.get(specId)) !== null && _a !== void 0 ? _a : []) {
-            let requestHandler = undefined;
-            try {
-                requestHandler = service.getRequestHandler(remoteApiRequest, uriRequest.lens);
-            }
-            catch (_b) {
-                RemoteApiServices_logger.warn("Client's Remote API request handler factory threw an error.");
-            }
-            if (requestHandler) {
-                reporter.count("lens_remote-api_handled-requests", 1, dimensions);
-                let cancellationHandler = undefined;
-                try {
-                    // Calls client's Remote API handler to process the request.
-                    cancellationHandler = requestHandler((response) => {
-                        var _a;
-                        reporter.count("lens_remote-api_responses", 1, dimensions);
-                        const responseCode = (_a = statusToResponseCodeMap[response.status]) !== null && _a !== void 0 ? _a : ResponseCode.UNRECOGNIZED;
-                        const uriResponse = {
-                            code: uriResponseOkCode,
-                            description: "",
-                            contentType: apiBinaryContentType,
-                            data: response.body,
-                            metadata: Object.assign(Object.assign({}, response.metadata), { [apiResponseStatusHeader]: responseCodeToNumber(responseCode).toString() }),
-                        };
-                        uriRequest.reply(uriResponse);
-                    });
-                }
-                catch (error) {
-                    RemoteApiServices_logger.warn("Client's Remote API request handler threw an error.");
-                }
-                if (typeof cancellationHandler === "function") {
-                    requestState.cancellationHandlers.set(uriRequest.request.identifier, () => {
-                        try {
-                            cancellationHandler();
-                        }
-                        catch (_a) {
-                            RemoteApiServices_logger.warn("Client's Remote API request cancellation handler threw an error.");
-                        }
-                    });
-                }
-                break;
-            }
-        }
-    }));
-    const uriCancelRequestEvents = uriCancelRequests.pipe(tap((uriRequest) => {
-        var _a;
-        const cancellationHandlers = (_a = lensRequestState.get(uriRequest.lens.id)) === null || _a === void 0 ? void 0 : _a.cancellationHandlers;
-        if (cancellationHandlers) {
-            callCancellationHandler(cancellationHandlers, uriRequest.request.requestId);
-        }
-    }));
-    merge(lensTurnOffEvents, uriRequestEvents, uriCancelRequestEvents)
-        .pipe(catchError((error, sourcePipe) => {
-        // The expectation is that if an error occurs, it happens in our own implementation,
-        // because app callbacks are wrapped with try..catch blocks.
-        // Therefore, we would like to report this error.
-        RemoteApiServices_logger.error(error);
-        reporter.count("lens_remote-api_errors", 1);
-        // Return the source pipe so that we can retry the pipe instead of just completing it.
-        return sourcePipe;
-    }), 
-    // When the pipe completes due to an error,
-    // we want to resubscribe to the original pipe to keep it alive.
-    retry(), takeUntil(sessionState.events.pipe(forActions("destroy"))))
-        .subscribe({
-        complete: () => handleLensApplicationEnd(lensRequestState, ...lensRequestState.keys()),
-    });
-    return {
-        uri: "app://remote-api/performApiRequest",
-        handleRequest(request, reply, lens) {
-            uriRequests.next({ request, reply, lens });
-        },
-        cancelRequest(request, lens) {
-            uriCancelRequests.next({ request, lens });
-        },
-    };
-}
-//# sourceMappingURL=RemoteApiServices.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/extensions/uriHandlersRegister.js
-
-
-
-
-
-
-
-
-
-
-
-const uriHandlersRegister_logger = getLogger("uriHandlersRegister");
 /**
  * Registers URI handlers within LensCore.
  * @internal
  */
-const registerUriHandlers = Injectable("registerUriHandlers", [
-    lensCoreFactory.token,
-    lensStateFactory.token,
-    uriHandlersFactory.token,
-    lensKeyboardFactory.token,
-    remoteApiServicesFactory.token,
-    lensRepositoryFactory.token,
-    sessionStateFactory.token,
-    operationalMetricReporterFactory.token,
-], (lensCore, lensState, userHandlers, lensKeyboard, remoteApiServices, lensRepository, sessionState, operationalMetricsReporter) => {
+const registerUriHandlers = Injectable("registerUriHandlers", [lensCoreFactory.token, lensStateFactory.token, uriHandlersFactory.token, lensKeyboardFactory.token], (lensCore, lensState, userHandlers, lensKeyboard) => {
     if (!isUriHandlers(userHandlers)) {
         throw new Error("Expected an array of UriHandler objects");
     }
     // Users may define UriHandlers using the uriHandlersFactory.token, but we need to add some internally-defined
-    // handlers (lens keyboard and Remote API) before registering handlers with LensCore.
-    const allHandlers = userHandlers.concat(lensKeyboard.uriHandler, getRemoteApiUriHandler(remoteApiServices, sessionState, lensState, lensRepository, operationalMetricsReporter));
+    // handlers (e.g. lens keyboard handler) before registering handlers with LensCore.
+    const allHandlers = userHandlers.concat(lensKeyboard.uriHandler);
     for (const { uri, handleRequest, cancelRequest } of allHandlers) {
         const uris = Array.isArray(uri) ? uri : [uri];
-        for (const { scheme, route } of uris.map(extractSchemeAndRoute)) {
+        for (const [scheme, route] of uris.map(extractSchemeAndRoute)) {
             lensCore.registerUriListener(scheme, route, {
                 handleRequest: (request) => {
                     const reply = (response) => {
@@ -25369,7 +23507,7 @@ const registerUriHandlers = Injectable("registerUriHandlers", [
                     // "lensApplied" state – we'll sanity check, though, and log a warning if we're not.
                     const state = lensState.getState();
                     if (isState(state, "noLensApplied")) {
-                        uriHandlersRegister_logger.warn(`Got a URI request for ${request.uri}, but there is no active lens. The ` +
+                        UriHandlers_logger.warn(`Got a URI request for ${request.uri}, but there is no active lens. The ` +
                             `request will not be processed.`);
                         return;
                     }
@@ -25382,7 +23520,7 @@ const registerUriHandlers = Injectable("registerUriHandlers", [
                     if (cancelRequest) {
                         const state = lensState.getState();
                         if (isState(state, "noLensApplied")) {
-                            uriHandlersRegister_logger.warn(`Got a URI cancel request for ${request.uri}, but there is no active ` +
+                            UriHandlers_logger.warn(`Got a URI cancel request for ${request.uri}, but there is no active ` +
                                 `lens. The cancel request will not be processed.`);
                             return;
                         }
@@ -25393,7 +23531,7 @@ const registerUriHandlers = Injectable("registerUriHandlers", [
         }
     }
 });
-//# sourceMappingURL=uriHandlersRegister.js.map
+//# sourceMappingURL=UriHandlers.js.map
 ;// CONCATENATED MODULE: ./node_modules/rxjs/dist/esm5/internal/operators/scanInternals.js
 
 function scanInternals(accumulator, seed, hasSeed, emitOnNext, emitBeforeComplete) {
@@ -25684,7 +23822,6 @@ const reportLensAndAssetDownload = Injectable("reportLensAndAssetDownload", [
 
 
 
-
 const getContentType = (dimensions) => {
     switch (dimensions.requestType) {
         case "lens_content":
@@ -25727,7 +23864,7 @@ const isRelevantRequest = (value) => {
 };
 const reportHttpMetrics = Injectable("reportHttpMetrics", [operationalMetricReporterFactory.token, requestStateEventTargetFactory.token], (reporter, requestStateEventTarget) => {
     scan_scan({ name: "inProgress", inProgress: new Map() })(requestStateEventTarget, ["started", "completed", "errored"], (state, event) => {
-        var _a;
+        var _a, _b;
         const { inProgress } = state;
         const { dimensions, requestId, timeMs } = event.detail;
         if (!isRelevantRequest(dimensions))
@@ -25747,7 +23884,7 @@ const reportHttpMetrics = Injectable("reportHttpMetrics", [operationalMetricRepo
                 const status = getStatus(event);
                 const operationalDimensions = new Map([
                     ["content_type", getContentType(dimensions)],
-                    ["network_type", (_a = cameraKitUserAgent.connectionType) !== null && _a !== void 0 ? _a : "unknown"],
+                    ["network_type", (_b = (_a = navigator.connection) === null || _a === void 0 ? void 0 : _a.type) !== null && _b !== void 0 ? _b : "unknown"],
                     ["status", status],
                 ]);
                 return {
@@ -26486,24 +24623,7 @@ class Histogram extends Metric {
     }
 }
 //# sourceMappingURL=Histogram.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/common/date.js
-const DEFAULT_TIMEZONE = "America/Los_Angeles";
-const dayFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: DEFAULT_TIMEZONE,
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-});
-const monthFormatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: DEFAULT_TIMEZONE,
-    year: "numeric",
-    month: "numeric",
-});
-//# sourceMappingURL=date.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/metrics/reporters/reportLensView.js
-
-
-
 
 
 
@@ -26522,31 +24642,6 @@ const monthFormatter = new Intl.DateTimeFormat("en-US", {
 // The value is documented here:
 // https://docs.google.com/document/d/1-kSzFWCWw9Qo3D08FR1_cqeHTsUtk9p3p3uOptzWDTY/edit#heading=h.q5liip76r9lt
 const viewTimeThresholdSec = 0.1;
-function isFirstTimeWithinPeriods(lensId, persistence) {
-    return tslib_es6_awaiter(this, void 0, void 0, function* () {
-        let isLensFirstWithinDay = false;
-        let isLensFirstWithinMonth = false;
-        try {
-            const lensLastViewDate = yield persistence.retrieve(lensId);
-            const currentDate = new Date();
-            if (!lensLastViewDate) {
-                isLensFirstWithinDay = true;
-                isLensFirstWithinMonth = true;
-            }
-            else {
-                isLensFirstWithinDay = dayFormatter.format(lensLastViewDate) !== dayFormatter.format(currentDate);
-                isLensFirstWithinMonth = monthFormatter.format(lensLastViewDate) !== monthFormatter.format(currentDate);
-            }
-            yield persistence.store(lensId, currentDate);
-        }
-        catch (error) {
-            console.error(`Error handling persistence for lensId ${lensId}: ${error}`);
-            isLensFirstWithinDay = false;
-            isLensFirstWithinMonth = false;
-        }
-        return { isLensFirstWithinDay, isLensFirstWithinMonth };
-    });
-}
 /**
  * @internal
  */
@@ -26567,9 +24662,6 @@ const reportLensView = Injectable("reportLensView", [
         cluster: 0,
         webglRendererInfo: "unknown",
     };
-    const lensViewPersistence = new ExpiringPersistence(
-    // 60 days expiration
-    () => 60 * 24 * 60 * 60, new IndexedDBPersistence({ databaseName: "recentLensViews" }));
     merge(
     // Begin measuring LensCore apply time once the lens has finished downloading and we actually add the lens
     // to LensCore (LensWait measures the full download + LensCore apply time i.e. perceived UX latency).
@@ -26596,15 +24688,15 @@ const reportLensView = Injectable("reportLensView", [
             metricsMeasurement.end();
             return Object.assign({ viewTimeSec: (getTimeMs() - lensTurnedOnTime) / 1000 }, metricsMeasurement.measure());
         }))));
-        return applyDelay.pipe(combineLatestWith(viewMetrics, from_from(isFirstTimeWithinPeriods(lensId, lensViewPersistence))), 
-        // This lens should always receive the lensTurnedOff action *before* the next lens is
-        // turned on. But just in case that assumption is violated, we'll clean up
-        // (and not report) if another lens turns on before our lens is turned off.
-        takeUntil(lensState.events.pipe(forActions("turnedOn"), filter(([a]) => a.data.id !== lensId))), take(1), map(([applyDelaySec, viewMetrics, isFirstTimeResults]) => (Object.assign(Object.assign({ applyDelaySec,
-            lensId }, viewMetrics), isFirstTimeResults))));
+        return applyDelay.pipe(combineLatestWith(viewMetrics), 
+        // This lens should always receive the lensTurnedOff action *before* the next lens is turned on.
+        // But just in case that assumption is violated, we'll clean up (and not report) if another lens
+        // turns on before our lens is turned off.
+        takeUntil(lensState.events.pipe(forActions("turnedOn"), filter(([a]) => a.data.id !== lensId))), take(1), map(([applyDelaySec, viewMetrics]) => (Object.assign({ applyDelaySec,
+            lensId }, viewMetrics))));
     }))
         .subscribe({
-        next: ({ applyDelaySec, lensId, viewTimeSec, avgFps, lensFrameProcessingTimeMsAvg, lensFrameProcessingTimeMsStd, lensFrameProcessingTimeMsMedian, lensFrameProcessingN, isLensFirstWithinDay, isLensFirstWithinMonth, }) => tslib_es6_awaiter(void 0, void 0, void 0, function* () {
+        next: ({ applyDelaySec, lensId, viewTimeSec, avgFps, lensFrameProcessingTimeMsAvg, lensFrameProcessingTimeMsStd, lensFrameProcessingTimeMsMedian, lensFrameProcessingN, }) => tslib_es6_awaiter(void 0, void 0, void 0, function* () {
             if (viewTimeSec < viewTimeThresholdSec)
                 return;
             const lensView = {
@@ -26617,8 +24709,11 @@ const reportLensView = Injectable("reportLensView", [
                 // We don't support recording video, but applications may do this without our knowledge.
                 recordingTimeSec: 0,
                 viewTimeSec,
-                isLensFirstWithinDay,
-                isLensFirstWithinMonth,
+                // TODO: if we want to support these fields, we'll need some persistence to keep track of the
+                // date of last application per lens.
+                // https://jira.sc-corp.net/browse/CAMKIT-3050
+                isLensFirstWithinDay: false,
+                isLensFirstWithinMonth: false,
                 performanceCluster,
                 webglRendererInfo,
             };
@@ -26700,7 +24795,6 @@ const reportLensWait = Injectable("reportLensWait", [lensStateFactory.token, met
 
 
 
-
 /**
  * @internal
  */
@@ -26710,15 +24804,14 @@ const reportUserSession = Injectable("reportUserSession", [metricsEventTargetFac
     const db = new IndexedDBPersistence({ databaseName: "SessionHistory" });
     // We standardize all user dates to PST as per our documentation:
     // https://docs.google.com/document/d/1-kSzFWCWw9Qo3D08FR1_cqeHTsUtk9p3p3uOptzWDTY/
-    const date = new Date();
-    const formattedDate = dayFormatter.format(date);
-    const formattedDateParts = dayFormatter.formatToParts(date);
-    const { day, month, year } = formattedDateParts.reduce((acc, { type, value }) => (Object.assign(Object.assign({}, acc), { [type]: parseInt(value) })), {});
+    const date = new Date(new Date().toLocaleDateString("en-US", {
+        timeZone: "America/Los_Angeles",
+    }));
+    const currentMonth = date.getMonth();
+    const currentDay = date.getDate();
+    const currentYear = date.getFullYear();
     const userSessionInfo = yield db.retrieve(userSessionKey);
     const mostRecentSessionStartDate = userSessionInfo === null || userSessionInfo === void 0 ? void 0 : userSessionInfo.mostRecentSessionStartDate;
-    const formattedMostRecentSessionStartDate = mostRecentSessionStartDate
-        ? dayFormatter.format(mostRecentSessionStartDate)
-        : null;
     const dailySessionBucketMap = new Map([
         [1, DailySessionBucket.ONE_SESSION],
         [2, DailySessionBucket.TWO_SESSION],
@@ -26732,18 +24825,21 @@ const reportUserSession = Injectable("reportUserSession", [metricsEventTargetFac
     ]);
     let dailySessionBucket = (_a = userSessionInfo === null || userSessionInfo === void 0 ? void 0 : userSessionInfo.dailySessionBucket) !== null && _a !== void 0 ? _a : DailySessionBucket.NO_SESSION_BUCKET;
     let isFirstWithinMonth = false;
-    if (formattedMostRecentSessionStartDate === formattedDate) {
+    if (mostRecentSessionStartDate &&
+        mostRecentSessionStartDate.getMonth() === currentMonth &&
+        mostRecentSessionStartDate.getDate() === currentDay &&
+        mostRecentSessionStartDate.getFullYear() === currentYear) {
         dailySessionBucket =
             (_b = dailySessionBucketMap.get(dailySessionBucket + 1)) !== null && _b !== void 0 ? _b : DailySessionBucket.TEN_OR_MORE_SESSION;
+        yield db.remove(userSessionKey);
         yield db.store(userSessionKey, {
             mostRecentSessionStartDate: date,
             dailySessionBucket,
         });
     }
     else {
-        isFirstWithinMonth =
-            !mostRecentSessionStartDate ||
-                monthFormatter.format(mostRecentSessionStartDate) !== monthFormatter.format(date);
+        isFirstWithinMonth = !mostRecentSessionStartDate || mostRecentSessionStartDate.getMonth() !== currentMonth;
+        yield db.remove(userSessionKey);
         yield db.store(userSessionKey, {
             mostRecentSessionStartDate: date,
             dailySessionBucket: (dailySessionBucket = DailySessionBucket.ONE_SESSION),
@@ -26753,9 +24849,9 @@ const reportUserSession = Injectable("reportUserSession", [metricsEventTargetFac
         name: "session",
         dailySessionBucket,
         isFirstWithinMonth,
-        month,
-        day,
-        year,
+        month: currentMonth + 1,
+        day: currentDay,
+        year: currentYear,
     };
     metricsEventTarget.dispatchEvent(new TypedCustomEvent("session", session));
 }));
@@ -27019,24 +25115,7 @@ const registerLensClientInterfaceHandler = Injectable("registerLensClientInterfa
     }));
 });
 //# sourceMappingURL=lensClientInterface.js.map
-;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/remote-configuration/preloadConfiguration.js
-
-
-
-
-
-const setPreloadedConfiguration = Injectable("setPreloadedConfiguration", [lensCoreFactory.token, remoteConfigurationFactory.token], (lensCore, remoteConfiguration) => {
-    remoteConfiguration
-        .getNamespace(Namespace.LENS_CORE_CONFIG)
-        .pipe(take(1))
-        .subscribe((configs) => {
-        const inputs = configs.map(({ configId, value }) => ({ configId, value }));
-        lensCore.setPreloadedConfiguration(inputs);
-    });
-});
-//# sourceMappingURL=preloadConfiguration.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/CameraKit.js
-
 
 
 
@@ -27166,7 +25245,6 @@ class CameraKit {
                 .provides(cameraKitSessionFactory)
                 .run(registerLensAssetsProvider)
                 .run(registerLensClientInterfaceHandler)
-                .run(setPreloadedConfiguration)
                 // We'll run a PartialContainer containing reporters for session-scoped metrics. Running this container
                 // allows each metric reporter to initialize itself (e.g. by adding event listeners to detect when certain
                 // actions occur).
@@ -27336,12 +25414,6 @@ function v4(options, buf, offset) {
 
 
 
-
-
-
-
-
-
 const businessEventsReporter_logger = getLogger("BusinessEventsReporter");
 // CameraKit's prod metrics endpoint.
 // See: https://github.sc-corp.net/Snapchat/pb_schema/blob/2a966db/proto/camera_kit/v3/service.proto#L133
@@ -27354,37 +25426,7 @@ const businessEventsReporter_relativePath = "/com.snap.camerakit.v3.Metrics/metr
 // limit to ensure we don't lose events which are larger in size than we expect.
 const BUSINESS_EVENT_BATCH_MAX_SIZE = 10;
 const BUSINESS_EVENT_BATCH_MAX_AGE_MS = 5000;
-const connectivityTypeMapping = {
-    cellular: cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_MOBILE,
-    bluetooth: cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_BLUETOOTH,
-    wifi: cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_WIFI,
-    unknown: cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_UNKNOWN,
-    none: cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_UNREACHABLE,
-};
-const vendorUuidKey = "vendorUuid";
-const vendorUuidExpiry = convertDaysToSeconds(60);
-/**
- * Retrieves or generates a vendor UUID (Universally Unique Identifier).
- *
- * @param persistence - The persistence storage interface where UUID is stored.
- * @returns {Promise<string | undefined>} - A Promise that resolves to the vendor UUID or undefined,
- * if any failure occurs or opt-in is not enabled.
- */
-const getOrGenerateVendorUuid = (persistence) => tslib_es6_awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const storedUuid = yield persistence.retrieve(vendorUuidKey);
-        if (storedUuid) {
-            return storedUuid;
-        }
-        const newUuid = esm_browser_v4();
-        yield persistence.store(vendorUuidKey, newUuid);
-        return newUuid;
-    }
-    catch (error) {
-        throw new Error("Failed to generate vendor UUID");
-    }
-});
-function listenAndReport(metricsEventTarget, metricsHandler, pageVisibility, eventHandlers, apiHostname, appVendorUuid) {
+function listenAndReport(metricsEventTarget, metricsHandler, pageVisibility, eventHandlers, apiHostname) {
     const sessionId = esm_browser_v4();
     businessEventsReporter_logger.log(`Session ID: ${sessionId}`);
     // Blizzard convention is to start the sequenceId at 1.
@@ -27418,8 +25460,6 @@ function listenAndReport(metricsEventTarget, metricsHandler, pageVisibility, eve
         pageVisibility,
     })).handler;
     const makeBlizzardEvent = (event) => {
-        var _a;
-        const deviceConnectivity = (_a = connectivityTypeMapping[cameraKitUserAgent.connectionType]) !== null && _a !== void 0 ? _a : cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_UNKNOWN;
         return Object.assign(Object.assign({}, event), { cameraKitEventBase: CameraKitEventBase.fromPartial({
                 kitEventBase: KitEventBase.fromPartial({
                     locale: cameraKitUserAgent.locale,
@@ -27436,9 +25476,8 @@ function listenAndReport(metricsEventTarget, metricsHandler, pageVisibility, eve
                 // We overload appId, using the origin instead because it's nice and human-readable (our backed adds
                 // the true appId as oauth_client_id before forwarding events to Blizzard).
                 appId: cameraKitUserAgent.origin,
-                deviceConnectivity,
+                deviceConnectivity: cameraKitEvents_CameraKitConnectivityType.CAMERA_KIT_CONNECTIVITY_TYPE_WIFI,
                 sessionId: sessionId,
-                appVendorUuid,
             }) });
     };
     const sendServerEvent = (eventName, eventData) => {
@@ -27470,95 +25509,72 @@ const businessEventsReporterFactory = Injectable("businessEventsReporter", [
     metricsHandlerFactory.token,
     pageVisibilityFactory.token,
     configurationToken,
-    remoteConfigurationFactory.token,
-], (metricsEventTarget, metricsHandler, pageVisibility, configuration, remoteConfiguration) => {
-    const vendorAnalyticsPersistence = new ExpiringPersistence(() => vendorUuidExpiry, new IndexedDBPersistence({ databaseName: "SessionHistory" }));
-    remoteConfiguration
-        .getInitializationConfig()
-        .pipe(take(1), switchMap(({ appVendorUuidOptIn }) => {
-        if (appVendorUuidOptIn) {
-            return from_from(getOrGenerateVendorUuid(vendorAnalyticsPersistence));
-        }
-        return of(undefined);
-    }), catchError((error) => {
-        businessEventsReporter_logger.warn(`Failed to retrieve or generate vendor UUID.`, error);
-        return of(undefined);
-    }))
-        .subscribe({
-        next: (appVendorUuid) => {
-            /**
-             * This defines a mapping from a business event's external name (the name we document in public
-             * API docs), to its internal representation as a Blizzard ServerEvent.
-             *
-             * It is important that we do this, since the naming of these internal business events are
-             * unintuitive and will not make sense to SDK users.
-             *
-             * To specify the internal event, we must give the ServerEvent's eventName, the specific property
-             *  name which contains the event data (this is a "oneof" property on ServerEvent), and use the
-             * correct event type's `fromPartial` method (this is generated from the ServerEvent protobuf).
-             *
-             * These events are documented here:
-             * https://docs.google.com/document/d/1-kSzFWCWw9Qo3D08FR1_cqeHTsUtk9p3p3uOptzWDTY/
-             *
-             * They are defined in code here:
-             * https://github.sc-corp.net/Snapchat/snapchat/tree/master/blizzard/schema/blizzard-schema/
-             *  codeGen/src/main/java/com/snapchat/analytics/schema/events/cameraKit
-             */
-            listenAndReport(metricsEventTarget, metricsHandler, pageVisibility, {
-                assetDownload: (event) => [
-                    "CAMERA_KIT_ASSET_DOWNLOAD",
-                    { cameraKitAssetDownload: CameraKitAssetDownload.fromPartial(event) },
-                ],
-                assetValidationFailed: (event) => [
-                    "CAMERA_KIT_ASSET_VALIDATION_FAILED",
-                    {
-                        cameraKitAssetValidationFailed: CameraKitAssetValidationFailed.fromPartial(event),
-                    },
-                ],
-                benchmarkComplete: (event) => [
-                    "CAMERA_KIT_WEB_BENCHMARK_COMPLETE",
-                    {
-                        cameraKitWebBenchmarkComplete: CameraKitWebBenchmarkComplete.fromPartial(event),
-                    },
-                ],
-                exception: (event) => [
-                    "CAMERA_KIT_EXCEPTION",
-                    { cameraKitException: CameraKitException.fromPartial(event) },
-                ],
-                legalPrompt: (event) => [
-                    "CAMERA_KIT_LEGAL_PROMPT",
-                    { cameraKitLegalPrompt: CameraKitLegalPrompt.fromPartial(event) },
-                ],
-                lensDownload: (event) => [
-                    "CAMERA_KIT_LENS_DOWNLOAD",
-                    { cameraKitLensDownload: CameraKitLensDownload.fromPartial(event) },
-                ],
-                lensView: (event) => [
-                    "CAMERA_KIT_WEB_LENS_SWIPE",
-                    { cameraKitWebLensSwipe: CameraKitWebLensSwipe.fromPartial(event) },
-                ],
-                lensWait: (event) => [
-                    "CAMERA_KIT_LENS_SPIN",
-                    { cameraKitLensSpin: CameraKitLensSpin.fromPartial(event) },
-                ],
-                lensContentValidationFailed: (event) => [
-                    "CAMERA_KIT_LENS_CONTENT_VALIDATION_FAILED",
-                    {
-                        cameraKitLensContentValidationFailed: CameraKitLensContentValidationFailed.fromPartial(event),
-                    },
-                ],
-                session: (event) => [
-                    "CAMERA_KIT_SESSION",
-                    { cameraKitSession: cameraKitEvents_CameraKitSession.fromPartial(event) },
-                ],
-            }, configuration.apiHostname, appVendorUuid);
-        },
-    });
+], (metricsEventTarget, metricsHandler, pageVisibility, configuration) => {
+    /**
+     * This defines a mapping from a business event's external name (the name we document in public API docs), to
+     * its internal representation as a Blizzard ServerEvent.
+     *
+     * It is important that we do this, since the naming of these internal business events are unintuitive and will
+     * not make sense to SDK users.
+     *
+     * To specify the internal event, we must give the ServerEvent's eventName, the specific property name which
+     * contains the event data (this is a "oneof" property on ServerEvent), and use the correct event type's
+     * `fromPartial` method (this is generated from the ServerEvent protobuf).
+     *
+     * These events are documented here:
+     * https://docs.google.com/document/d/1-kSzFWCWw9Qo3D08FR1_cqeHTsUtk9p3p3uOptzWDTY/
+     *
+     * They are defined in code here:
+     * https://github.sc-corp.net/Snapchat/snapchat/tree/master/blizzard/schema/blizzard-schema/
+     *  codeGen/src/main/java/com/snapchat/analytics/schema/events/cameraKit
+     */
+    listenAndReport(metricsEventTarget, metricsHandler, pageVisibility, {
+        assetDownload: (event) => [
+            "CAMERA_KIT_ASSET_DOWNLOAD",
+            { cameraKitAssetDownload: CameraKitAssetDownload.fromPartial(event) },
+        ],
+        assetValidationFailed: (event) => [
+            "CAMERA_KIT_ASSET_VALIDATION_FAILED",
+            { cameraKitAssetValidationFailed: CameraKitAssetValidationFailed.fromPartial(event) },
+        ],
+        benchmarkComplete: (event) => [
+            "CAMERA_KIT_WEB_BENCHMARK_COMPLETE",
+            { cameraKitWebBenchmarkComplete: CameraKitWebBenchmarkComplete.fromPartial(event) },
+        ],
+        exception: (event) => [
+            "CAMERA_KIT_EXCEPTION",
+            { cameraKitException: CameraKitException.fromPartial(event) },
+        ],
+        legalPrompt: (event) => [
+            "CAMERA_KIT_LEGAL_PROMPT",
+            { cameraKitLegalPrompt: CameraKitLegalPrompt.fromPartial(event) },
+        ],
+        lensDownload: (event) => [
+            "CAMERA_KIT_LENS_DOWNLOAD",
+            { cameraKitLensDownload: CameraKitLensDownload.fromPartial(event) },
+        ],
+        lensView: (event) => [
+            "CAMERA_KIT_WEB_LENS_SWIPE",
+            { cameraKitWebLensSwipe: CameraKitWebLensSwipe.fromPartial(event) },
+        ],
+        lensWait: (event) => [
+            "CAMERA_KIT_LENS_SPIN",
+            { cameraKitLensSpin: CameraKitLensSpin.fromPartial(event) },
+        ],
+        lensContentValidationFailed: (event) => [
+            "CAMERA_KIT_LENS_CONTENT_VALIDATION_FAILED",
+            {
+                cameraKitLensContentValidationFailed: CameraKitLensContentValidationFailed.fromPartial(event),
+            },
+        ],
+        session: (event) => [
+            "CAMERA_KIT_SESSION",
+            { cameraKitSession: cameraKitEvents_CameraKitSession.fromPartial(event) },
+        ],
+    }, configuration.apiHostname);
 });
 //# sourceMappingURL=businessEventsReporter.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/logger/registerLogEntriesSubscriber.js
-
-
 
 
 
@@ -27576,24 +25592,13 @@ const registerLogEntriesSubscriber = Injectable("registerLogEntriesSubscriber", 
         .subscribe((logEntry) => {
         switch (configuration.logger) {
             case "console":
-                // Chrome doesn't print the `cause` Error property, so we need to manually construct a complete
-                // stack trace using our `stringifyError` helper.
-                const messages = cameraKitUserAgent.browser.brand === "Chrome"
-                    ? logEntry.messages.map((message) => {
-                        if (!(message instanceof Error))
-                            return message;
-                        message.stack = stringifyError(message);
-                        return message;
-                    })
-                    : logEntry.messages;
-                console[logEntry.level](`[CameraKit.${logEntry.module}]`, ...messages);
+                console[logEntry.level](`[CameraKit.${logEntry.module}]`, ...logEntry.messages);
                 break;
         }
     });
 });
 //# sourceMappingURL=registerLogEntriesSubscriber.js.map
 ;// CONCATENATED MODULE: ./node_modules/@snap/camera-kit/lib/bootstrapCameraKit.js
-
 
 
 
@@ -27699,7 +25704,6 @@ function bootstrapCameraKit(configuration, provide) {
                 .provides(defaultFetchHandlerFactory)
                 .provides(remoteMediaAssetLoaderFactory)
                 .provides(lensSourcesFactory)
-                .provides(remoteApiServicesFactory)
                 .provides(uriHandlersFactory);
             const publicContainer = provide ? provide(defaultPublicContainer) : defaultPublicContainer;
             // Now that the client's provide() function has completed and the configuration override is ready,
@@ -27717,15 +25721,6 @@ function bootstrapCameraKit(configuration, provide) {
                 .provides(metricsHandlerFactory)
                 .provides(operationalMetricReporterFactory)
                 .provides(reportGlobalException)
-                .provides(cofHandlerFactory)
-                .provides(remoteConfigurationFactory)
-                .provides(legalPromptFactory)
-                .provides(legalStateFactory)
-                // We'll run a PartialContainer containing reporters for globally-scoped metrics. Running this container
-                // allows each metric reporter to initialize itself (e.g. by adding event listeners to detect when certain
-                // actions occur). This PartialContainer also includes the service which listens to locally-reported metrics
-                // and sends them to our backend.
-                .run(reportGloballyScopedMetrics)
                 .run(businessEventsReporterFactory);
             // Run the exception logger so that it can subscribe to log events -- we can't use `Container.run()` because
             // reportGlobalException is also used as a dependency by other Services (and run does not provide Services,
@@ -27740,12 +25735,21 @@ function bootstrapCameraKit(configuration, provide) {
             const lensCore = yield telemetryContainer.provides(lensCoreFactory).get(lensCoreFactory.token);
             const container = telemetryContainer
                 .provides(Injectable(lensCoreFactory.token, () => lensCore))
+                .provides(cofHandlerFactory)
+                .provides(remoteConfigurationFactory)
                 .provides(lensPersistenceStoreFactory)
                 .provides(deviceDependentAssetLoaderFactory)
                 .provides(staticAssetLoaderFactory)
                 .provides(lensAssetRepositoryFactory)
                 .provides(lensRepositoryFactory)
-                .provides(cameraKitFactory);
+                .provides(legalPromptFactory)
+                .provides(legalStateFactory)
+                .provides(cameraKitFactory)
+                // We'll run a PartialContainer containing reporters for globally-scoped metrics. Running this container
+                // allows each metric reporter to initialize itself (e.g. by adding event listeners to detect when certain
+                // actions occur). This PartialContainer also includes the service which listens to locally-reported metrics
+                // and sends them to our backend.
+                .run(reportGloballyScopedMetrics);
             const cameraKit = container.get(cameraKitFactory.token);
             const bootstrapTimeMs = performance.now() - startTimeMs;
             const reporter = container.get(operationalMetricReporterFactory.token);
@@ -27863,7 +25867,7 @@ const getImageBitmap = (imageData, format) => __awaiter(void 0, void 0, void 0, 
  * passed a `render` function. It may call `render` and CameraKit will process the pixel data passed to `render` and
  * return a Promise of the processed pixels (along with rendering them to the normal output canvases).
  * @param options
- * @param options.cameraType By default we set this to 'user', which is the camera type most Lenses expect.
+ * @param options.cameraType By default we set this to 'front', which is the camera type most Lenses expect.
  *
  * @internal
  */
@@ -27961,7 +25965,7 @@ const createFunctionSource = (sourceFunction, options = {}) => {
  *
  * @param image Image element.
  * @param options
- * @param options.cameraType By default we set this to 'user', which is the camera type most Lenses expect.
+ * @param options.cameraType By default we set this to 'front', which is the camera type most Lenses expect.
  * @param options.fpsLimit By default we set no limit on FPS.
  *
  * @category Rendering
@@ -28014,7 +26018,6 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
 
 
-
 //# sourceMappingURL=index.js.map
 ;// CONCATENATED MODULE: ./src/main.js
 
@@ -28028,7 +26031,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
         getRequestHandler(request) {
             if (request.endpointId !== "codemail") return;
-            
+
 
             return (reply) => {
                 fetch("https://bouygues-404412.lm.r.appspot.com/codemail?code=x&mail=y", {
@@ -28079,18 +26082,18 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
 
 
-    //var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' })
-  
+    var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' })
 
-    var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' }, (container) =>
-    container.provides(
-        Injectable(
-            remoteApiServicesFactory.token,
-            [remoteApiServicesFactory.token],
-            (existing) => [...existing, damsService]
-        )
-    )
-);
+    //USING REMOTE API
+    // var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' }, (container) =>
+    // container.provides(
+    //     Injectable(
+    //         remoteApiServicesFactory.token,
+    //         [remoteApiServicesFactory.token],
+    //         (existing) => [...existing, damsService]
+    //     )
+    // )
+    //);
 
     const session = await cameraKit.createSession();
 
