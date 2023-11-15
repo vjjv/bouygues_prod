@@ -58,7 +58,7 @@ body {
   .poweredbysnap-logo {
     width: 100%;
     position: absolute;
-    bottom: 100px;
+    bottom: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
