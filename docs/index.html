@@ -1,28 +1,52 @@
 <!DOCTYPE html>
 <html lang="fr">
 
+<head>
+  <meta charset="utf-8">
+  <title>Camera kit demo</title>
+  <meta name="description" content="Camera kit demo">
+  <meta name="robots" content="noindex">
 
+  <link href="index.css" rel="stylesheet">
+  <script src="./packed.js"></script>
+</head>
 
-
-
-  <head>
-    <meta charset="utf-8">
-    <title>Camera kit demo</title>
-    <meta name="description" content="Camera kit demo">
-    <meta name="robots" content="noindex">
-
-    <link href="index.css" rel="stylesheet">
-    <script src="./packed.js"></script>
-  </head>
-
-
-
-
-  <body>
-    <!-- <div class="poweredbysnap-logo">
+<body>
+  <!-- <div class="poweredbysnap-logo">
       <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
     </div> -->
-    <canvas id="canvas"></canvas>
-    <video id="video" style="display: none;" autoplay muted playsinline></video>
-  </body>
+
+
+
+  <canvas id="canvas"></canvas>
+  <video id="video" style="display: none;" autoplay muted playsinline></video>
+
+  <div id="card-container">
+    <div id="card">
+      <br><br><br>
+      <div id="title">Félicitations !</div>
+      <div class="message">Voues êtes le gagnant de otre jeu, vous remportez le smarthone de votre choix avec un an de forfait offer</div>
+      <br><br>
+      <div id="code">FFGB69685BG</div>
+      <div id="mail">placeholder mail</div>
+      <div class="message rdv">Rendez-vous :</div>
+      <div id="button1" class="button-container message">
+        <img class="button-img" src="assets/BOUTON 01.png" alt="">
+        <div><u>En ligne</u></div>
+        <div style="flex:1"></div>
+      </div>
+      <div id="button2" class="button-container message">
+        <img class="button-img" src="assets/BOUTON 02.png" alt="">
+        <div>Communiquez votre code à votre vendeur dans <u>votre boutique</u></div>
+        <div style="flex:1"></div>
+      </div>
+      <br><br><br>
+    </div>
+
+  </div>
+
+
+
+</body>
+
 </html>

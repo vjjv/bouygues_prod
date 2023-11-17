@@ -1,3 +1,12 @@
+@font-face {
+  font-family: Bouygues-Bold;
+  src: url("assets/BouyguesRead-Bold.otf") format("opentype");
+}
+@font-face {
+  font-family: Bouygues-Regular;
+  src: url("assets/BouyguesRead-Medium.otf") format("opentype");
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -51,9 +60,7 @@ body {
     justify-content: center;
   }
 
-  .flamingo-logo > img {
-    width: 300px;
-  }
+
 
   .poweredbysnap-logo {
     width: 100%;
@@ -67,3 +74,83 @@ body {
   .poweredbysnap-logo > img {
     width: 200px;
   }
+
+  #card-container{
+    /* height: 100vh; */
+    width: 100vw;
+    top: 0;
+    position: absolute;
+    display: none; /* none - flex*/
+    align-items: center;
+    justify-content: center;
+  }
+  #card{
+    background-image: url("assets/FOND\ CARTE.png") ; ; 
+    background-repeat: no-repeat; 
+    background-size: 100% 100%;
+    height: 60%;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  #code{
+    background-image: url("assets/BANDEAU\ REDUCTION.png") ; ; 
+    background-repeat: no-repeat; 
+    background-size: 100% 100%;
+    text-align: center;
+    width: 80%;
+    height: 10%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Bouygues-Bold;
+    font-size : 50px;
+  }
+  .message{
+    text-align: center;
+    width: 80%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Bouygues-Regular;
+    color: white;
+    font-size : 50px;
+  }
+  .rdv{
+    font-size : 40px;
+  }
+  #title{
+    text-align: center;
+    width: 80%;
+    height: 10%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Bouygues-Bold;
+    font-size : 60px;
+    color: white;
+  }
+  #mail{
+    font-family: Bouygues-Bold;
+    color: grey;
+    margin-top:6px;
+    margin-bottom:6px;
+  }
+  .button-container{
+    display: flex;
+    align-content: flex-start;
+    flex-direction: row;
+    text-align: left;
+    font-size: 34px;
+    line-height: 35px;
+  }
+  .button-img{
+    width: 70px;
+    margin-right:20px
+  }
+  
