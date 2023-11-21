@@ -70,23 +70,6 @@ import {
 
     const session = await cameraKit.createSession();
     document.getElementById('canvas').replaceWith(session.output.live);
-
-
-    //detect if canvas is white
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    console.log(imageData.data[3]); // 255,255,255,255 = full white rgba
-    let rgba = imageData.data;
-    setInterval( ()=>{
-        if(rgba[0]==255 && rgba[1]==255 && rgba[2]==255 && rgba[3]==255){
-            console.log('Canvas white detected!')
-        }else{console.log('Canvas not white')}
-    },500)
-
-    // end detect canvas white
-
-
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
     session.applyLens(lenses[0], { mail: "launch@param.com" });
     // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
