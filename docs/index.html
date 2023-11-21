@@ -48,15 +48,16 @@
 
   <script>
     //detect if canvas is white
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    console.log(imageData.data[3]); // 255,255,255,255 = full white rgba
-    let rgba = imageData.data;
+
     setInterval(() => {
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+      imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      console.log(imageData.data[3]); // 255,255,255,255 = full white rgba
+      let rgba = imageData.data;
       if (rgba[0] == 255 && rgba[1] == 255 && rgba[2] == 255 && rgba[3] == 255) {
         console.log('Canvas white detected! ')
-      } else { console.log('Canvas not white , '+rgba[0]+rgba[1]+rgba[2]+rgba[3]) }
+      } else { console.log('Canvas not white , ' + rgba[0] + rgba[1] + rgba[2] + rgba[3]) }
     }, 500)
 
     // end detect canvas white
