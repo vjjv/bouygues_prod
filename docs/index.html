@@ -52,7 +52,7 @@
     var ctx;
     var rgba;
     setInterval(() => {
-      anvas = document.getElementById("canvas");
+      canvas = document.querySelector('canvas');;
       ctx = canvas.getContext("2d");
       imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       console.log(imageData.data[3]); // 255,255,255,255 = full white rgba
