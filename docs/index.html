@@ -2,13 +2,13 @@
 <html lang="fr">
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>Camera kit demo</title>
-  <meta name="description" content="Camera kit demo" />
-  <meta name="robots" content="noindex" />
-  <link href="index.css" rel="stylesheet" />
+  <meta name="description" content="Camera kit demo">
+  <meta name="robots" content="noindex">
+
+  <link href="index.css" rel="stylesheet">
   <script src="./packed.js"></script>
-  <meta meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </head>
 
 <body>
@@ -16,117 +16,68 @@
       <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
     </div> -->
 
+
+
   <canvas id="canvas"></canvas>
-  <video id="video" style="display: none" autoplay muted playsinline></video>
-
-  <!-- <div id="card-start">
-    <div id="card-start-content">
-      <img src="assets/logo_blanc.png" alt="logo" title="logo" />
-      <p>
-        Découvrez <span>le cadeau</span> que Bouygues Telecom a
-        <span>caché sous votre sapin</span>
-      </p>
-      <button onclick="closeStart()">Je découvre</button>
-    </div>
-
-    <div id="card-form">
-      <img src="assets/logo.png" alt="logo" title="logo" />
-      <form id="myForm">
-        <label for="lastname">Nom</label>
-        <input type="text" name="lastname" placeholder="Nom" />
-        <label for="lastname">Prénom</label>
-        <input type="text" name="firstname" placeholder="Prénom" />
-        <label for="lastname">Email*</label>
-        <input type="email" name="email" placeholder="Email" required />
-        <label for="lastname">Téléphone*</label>
-        <input type="tel" name="phone" placeholder="Téléphone" required />
-        <div>
-          <input type="checkbox" name="condition" required style="display: inline-block" /><label
-            style="display: contents" for="condition">
-            I agree to the terms and conditions</label>
-        </div>
-        <button type="submit">C'est parti!</button>
-      </form>
-    </div>
-  </div> -->
+  <video id="video" style="display: none;" autoplay muted playsinline></video>
 
   <div id="card-container">
     <div id="card">
-      <br /><br /><br />
+      <br><br><br>
       <div id="title">Félicitations !</div>
-      <div class="message">
-        Vous êtes le gagnant de notre jeu, vous remportez le smartphone de
-        votre choix avec un an de forfait offert
-      </div>
-      <br /><br />
+      <div class="message">Voues êtes le gagnant de otre jeu, vous remportez le smarthone de votre choix avec un an de
+        forfait offer</div>
+      <br><br>
       <div id="code">FFGB69685BG</div>
       <div id="mail">placeholder mail</div>
       <div class="message rdv">Rendez-vous :</div>
       <div id="button1" class="button-container message">
-        <img class="button-img" src="assets/BOUTON 01.png" alt="" />
+        <img class="button-img" src="assets/BOUTON 01.png" alt="">
         <div><u>En ligne</u></div>
-        <div style="flex: 1"></div>
+        <div style="flex:1"></div>
       </div>
       <div id="button2" class="button-container message">
-        <img class="button-img" src="assets/BOUTON 02.png" alt="" />
-        <div>
-          Communiquez votre code à votre vendeur dans <u>votre boutique</u>
-        </div>
-        <div style="flex: 1"></div>
+        <img class="button-img" src="assets/BOUTON 02.png" alt="">
+        <div>Communiquez votre code à votre vendeur dans <u>votre boutique</u></div>
+        <div style="flex:1"></div>
       </div>
-      <br /><br /><br />
+      <br><br><br>
     </div>
+
   </div>
+
   <script>
     //detect if canvas is white
     var canvas;
     var ctx;
     var rgba;
     var out;
-
     setInterval(() => {
-      canvas = document.querySelector('canvas');
+      canvas = document.querySelector('canvas');;
       ctx = canvas.getContext('webgl2');
       out = new Uint8Array(4);
       ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
       console.log('result');
       console.log(out);
 
-
-      // if (out[0] == 0 && out[1] == 255 && out[2] == 0 && out[3] == 255) {
-      //   console.log('Canvas green detected! ')
-      // } else {
-      //   console.log('Canvas not green : ' + out[0] + ', ' + out[1] + ', ' + out[2] + ', ' + out[3])
-      // }
+      // if (rgba[0] == 255 && rgba[1] == 255 && rgba[2] == 255 && rgba[3] == 255) {
+        // console.log('Canvas white detected! ')
+      // } else { console.log('Canvas not white , ' + rgba[0] + rgba[1] + rgba[2] + rgba[3]) }
     }, 1000)
+
+    
+    const gl2 = canvas.getContext('webgl2');
+
+    const out1 = new Uint8Array(4);
+    const out2 = new Uint8Array(4);
+    gl1.readPixels(0, 0, 1, 1, gl1.RGB, gl1.UNSIGNED_BYTE, out1);
+    gl2.readPixels(0, 0, 1, 1, gl2.RGBA, gl2.UNSIGNED_BYTE, out2);
+    console.log(out1);  // [  0, 0, 0,   0]
+    console.log(out2);  // [255, 0, 0, 255]
+    // end detect canvas white
+
   </script>
 
 </body>
 
 </html>
-<script>
-  function closeStart() {
-    document.getElementById("card-start-content").style.display = "none";
-    document.getElementById("card-form").style.display = "flex";
-  }
-
-  const form = document.getElementById("myForm");
-
-  form.addEventListener("submit", function (event) {
-    // Prevent the default form submission behavior
-    event.preventDefault();
-
-    // Your custom logic when the form is submitted
-    console.log("Form submitted!");
-    document.getElementById("card-start").style.display = "none";
-
-    // You can access form data using form elements, for example:
-
-    const formData = new FormData(form);
-    const formDataObject = {};
-    formData.forEach(function (value, key) {
-      formDataObject[key] = value;
-    });
-    console.log("Form Data as JSON:", formDataObject);
-  });
-</script>
