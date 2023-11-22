@@ -91,24 +91,19 @@ import {
     session.source.setRenderSize(window.innerWidth, window.innerHeight)
     session.play();
 
-    let ctx = canvas.getContext('webgl2');
-    console.log(ctx);
-    var rgba;
-    var out;
-    setInterval(() => {
-      canvas = document.querySelector('canvas');
-      ctx = canvas.getContext('webgl2');
-      out = new Uint8Array(4);
-      ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
-      console.log('result');
-      console.log(out);
+    // let ctx = canvas.getContext('webgl2');
+    // console.log(ctx);
+    // var rgba;
+    // var out;
+    // setInterval(() => {
+    //   canvas = document.querySelector('canvas');
+    //   ctx = canvas.getContext('webgl2');
+    //   out = new Uint8Array(4);
+    //   ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
+    //   console.log('result');
+    //   console.log(out);
 
-    //   if (out[0] == 0 && out[1] == 255 && out[2] == 0 && out[3] == 255) {
-    //     console.log('Canvas green detected! ')
-    //   } else {
-    //     console.log('Canvas not green : ' + out[0] + ', ' + out[1] + ', ' + out[2] + ', ' + out[3])
-    //   }
-    }, 1000)
+    // }, 1000)
 
 
 })();
