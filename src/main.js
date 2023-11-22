@@ -71,7 +71,7 @@ import {
     const session = await cameraKit.createSession();
     document.getElementById('canvas').replaceWith(session.output.live);
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
-    session.applyLens(lenses[0], { mail: "launch@param.com" });
+    session.applyLens(lenses[1], { mail: "launch@param.com" });
     // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
     let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
