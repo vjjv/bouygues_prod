@@ -66,15 +66,15 @@
     }, 1000)
 
     
-    const gl2 = canvas.getContext('webgl2');
+    // const gl2 = canvas.getContext('webgl2');
 
-    const out1 = new Uint8Array(4);
-    const out2 = new Uint8Array(4);
-    gl1.readPixels(0, 0, 1, 1, gl1.RGB, gl1.UNSIGNED_BYTE, out1);
-    gl2.readPixels(0, 0, 1, 1, gl2.RGBA, gl2.UNSIGNED_BYTE, out2);
-    console.log(out1);  // [  0, 0, 0,   0]
-    console.log(out2);  // [255, 0, 0, 255]
-    // end detect canvas white
+    // const out1 = new Uint8Array(4);
+    // const out2 = new Uint8Array(4);
+    // gl1.readPixels(0, 0, 1, 1, gl1.RGB, gl1.UNSIGNED_BYTE, out1);
+    // gl2.readPixels(0, 0, 1, 1, gl2.RGBA, gl2.UNSIGNED_BYTE, out2);
+    // console.log(out1);  // [  0, 0, 0,   0]
+    // console.log(out2);  // [255, 0, 0, 255]
+    // // end detect canvas white
 
   </script>
 
