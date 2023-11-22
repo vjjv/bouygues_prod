@@ -86,42 +86,6 @@
         <br /><br /><br />
       </div>
     </div>
-    <script>
-      //detect if canvas is white
-      var canvas;
-      var ctx;
-      var rgba;
-      var out;
-      canvas = document.querySelector('canvas');;
-      setInterval(() => {
-        if (!ctx) ctx = canvas.getContext('webgl2');
-        out = new Uint8Array(4);
-        ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
-        // console.log('result');
-        // console.log(out);
-  
-  
-        if (out[0] == 0 && out[1] == 255 && out[2] == 0 && out[3] == 255) {
-          console.log('Canvas green detected! ')
-        } else {
-          console.log('Canvas not green : ' + out[0] + ', ' + out[1] + ', ' + out[2] + ', ' + out[3])
-        }
-      }, 500)
-  
-  
-      // const gl2 = canvas.getContext('webgl2');
-  
-      // const out1 = new Uint8Array(4);
-      // const out2 = new Uint8Array(4);
-      // gl1.readPixels(0, 0, 1, 1, gl1.RGB, gl1.UNSIGNED_BYTE, out1);
-      // gl2.readPixels(0, 0, 1, 1, gl2.RGBA, gl2.UNSIGNED_BYTE, out2);
-      // console.log(out1);  // [  0, 0, 0,   0]
-      // console.log(out2);  // [255, 0, 0, 255]
-      // end detect canvas white
-  
-  
-  
-    </script>
   </body>
 </html>
 <script>
