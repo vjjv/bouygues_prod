@@ -16,10 +16,10 @@
       <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
     </div> -->
 
-  <!-- <canvas id="canvas"></canvas> -->
+  <canvas id="canvas"></canvas>
   <video id="video" style="display: none" autoplay muted playsinline></video>
 
-  <div id="card-start">
+  <!-- <div id="card-start">
     <div id="card-start-content">
       <img src="assets/logo_blanc.png" alt="logo" title="logo" />
       <p>
@@ -32,7 +32,6 @@
     <div id="card-form">
       <img src="assets/logo.png" alt="logo" title="logo" />
       <form id="myForm">
-        <!-- classic html form firstname, lastname, email, phone, checkbox condition -->
         <label for="lastname">Nom</label>
         <input type="text" name="lastname" placeholder="Nom" />
         <label for="lastname">Prénom</label>
@@ -49,7 +48,7 @@
         <button type="submit">C'est parti!</button>
       </form>
     </div>
-  </div>
+  </div> -->
 
   <div id="card-container">
     <div id="card">
@@ -86,32 +85,22 @@
     var out;
 
     setInterval(() => {
-      // if(!ctx){
       canvas = document.querySelector('canvas');
       ctx = canvas.getContext('webgl2');
-      // }
       out = new Uint8Array(4);
       ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
       console.log('result');
       console.log(out);
 
 
-      if (out[0] == 0 && out[1] == 255 && out[2] == 0 && out[3] == 255) {
-        console.log('Canvas green detected! ')
-      } else {
-        console.log('Canvas not green : ' + out[0] + ', ' + out[1] + ', ' + out[2] + ', ' + out[3])
-      }
-    }, 500)
+      // if (out[0] == 0 && out[1] == 255 && out[2] == 0 && out[3] == 255) {
+      //   console.log('Canvas green detected! ')
+      // } else {
+      //   console.log('Canvas not green : ' + out[0] + ', ' + out[1] + ', ' + out[2] + ', ' + out[3])
+      // }
+    }, 1000)
   </script>
-  <style>
-    #canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+
 </body>
 
 </html>

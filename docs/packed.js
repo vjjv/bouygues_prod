@@ -28076,8 +28076,6 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
 
     const session = await cameraKit.createSession();
-    let c = document.createElement('canvas');
-    c.setAttribute("id", "canvas");
     document.getElementById('canvas').replaceWith(session.output.live);
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
     session.applyLens(lenses[0], { mail: "launch@param.com" });
