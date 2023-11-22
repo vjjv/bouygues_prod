@@ -73,6 +73,9 @@ import {
     let offscreen = canvas.replaceWith(session.output.live);
     console.log('offscreen');
     console.log(offscreen);
+    let ctx = canvas.getContext('webgl2');
+    console.log(ctx);
+    
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
     session.applyLens(lenses[0], { mail: "launch@param.com" });
     // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
