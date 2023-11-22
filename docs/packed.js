@@ -28103,6 +28103,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
     var rgba;
     var out;
     setInterval(() => {
+      canvas = document.querySelector('canvas');
       ctx = canvas.getContext('webgl2');
       out = new Uint8Array(4);
       ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
