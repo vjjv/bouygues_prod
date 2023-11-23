@@ -24,7 +24,7 @@ import {
 
     // Block form if it's between 8h and 20h
     let currentHour = new Date().getHours();
-    if (currentHour >= 11 && currentHour <= 20) {
+    if (currentHour >= 8 && currentHour <= 20) {
       //  console.log("It's between 8h and 20h");
     } else {
       //  console.log("It's not between 8h and 20h");
