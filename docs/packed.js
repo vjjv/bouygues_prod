@@ -28136,6 +28136,10 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
     session.applyLens(lenses[0], { mail: "launch@param.com" });
+    setTimeout(()=>{
+        console.log('changing lens')
+        session.applyLens(lenses[1], { mail: "launch@param.com" });
+    },5000)
     // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
     let mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
