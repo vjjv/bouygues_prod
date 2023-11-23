@@ -38,6 +38,7 @@ import {
         let randomizer = await getRandomizer();
         console.log('Randomizer : ' + randomizer);
         let userRandom = Math.floor(Math.random()* randomizer);
+        console.log('userRandom : '+ userRandom);
         if(userRandom == 0){ //winner
             let responsePrize = await getPrize(obj.email);
             console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
