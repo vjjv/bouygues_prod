@@ -33,16 +33,15 @@ import {
     });
 
     async function sendData(obj) {
-        console.log(obj);
-        let response = await postContact(obj);
-        console.log(response.message + " : " + response.mail);
-        //start Lens
+        let responseContact = await postContact(obj);
+        console.log(responseContact.message + " :: " + responseContact.mail);
+        let responsePrize = await getPrize(obj.email);
+        console.log('Prize : '+ responsePrize.mail + ' / ' + responsePrize.code);
 
     }
 
     async function postContact(obj) {
         return new Promise(async (resolve, reject) => {
-            console.log(obj);
             let res = await fetch('https://bouygues-404412.lm.r.appspot.com/contact?' + new URLSearchParams({
                 email: `${obj.email}`,
                 firstname: `${obj.firstname}`,
@@ -53,6 +52,18 @@ import {
                 method: 'POST',
             })
             let objResponse = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+            resolve(objResponse)
+        })
+    }
+
+    async function getPrize(mail) {
+        return new Promise(async (resolve, reject) => {
+            let res = await fetch('https://bouygues-404412.lm.r.appspot.com/prize?' + new URLSearchParams({
+                mail: `${obj.email}`,
+            }), {
+                method: 'GET',
+            })
+            let objResponse = await res.json(); // { mail : 'a@a.com', code: 'ABCD'}
             resolve(objResponse)
         })
     }
