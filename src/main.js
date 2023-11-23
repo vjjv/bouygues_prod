@@ -42,14 +42,14 @@ import {
     }
     
     async function postContact(obj) {
-        console.log(obj);
         return new Promise(async (resolve, reject) => {
+            console.log(obj);
             let res = await fetch('https://bouygues-404412.lm.r.appspot.com/contact?' + new URLSearchParams({
-                email: obj.email,
-                fistname: obj.firstname,
-                lastname: obj.lastname,
-                phone: obj.phone,
-                condition: obj.condition,
+                email: `${obj.email}`,
+                fistname: `${obj.firstname}`,
+                lastname: `${obj.lastname}`,
+                phone: `${obj.phone}`,
+                condition: `${obj.condition}`,
             }), {
                 method: 'POST',
             })
