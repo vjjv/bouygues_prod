@@ -35,10 +35,16 @@ import {
     async function sendData(obj) {
         let responseContact = await postContact(obj);
         console.log(responseContact.message + " :: " + responseContact.mail);
-        let responsePrize = await getPrize(obj.email);
-        console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
-        startLens(1, responsePrize.mail, responsePrize.code)
-
+        let randomizer = await getRandomizer();
+        console.log('Randomizer : ' + randomizer);
+        let userRandom = Math.floor(Math.random()* randomizer);
+        if(userRandom == 0){ //winner
+            let responsePrize = await getPrize(obj.email);
+            console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
+            startLens(1, responsePrize.mail, responsePrize.code)
+        }else{ //loser
+            startLens(1, 'loser@mail.com', '-1')
+        }
     }
 
     async function postContact(obj) {
@@ -68,6 +74,18 @@ import {
             resolve(objResponse)
         })
     }
+
+    async function getRandomizer() {
+        return new Promise(async (resolve, reject) => {
+            let res = await fetch('https://bouygues-404412.lm.r.appspot.com/randomizer', {
+                method: 'GET',
+            })
+            let objResponse = await res.json(); // { randomizer : '10''}
+            resolve(objResponse.randomizer)
+        })
+    }
+
+
 
 
 
@@ -135,7 +153,7 @@ import {
     let mediaStream;
     let source;
     async function startLens(lens, mail, code) {
-        console.log('startlens '+lens);
+        console.log('startlens ' + lens);
         session.applyLens(lenses[lens], { mail: mail, code: code });
         // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
         mediaStream = await navigator.mediaDevices.getUserMedia({
