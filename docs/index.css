@@ -92,6 +92,12 @@ body {
   position: absolute;
 }
 
+#form-message {
+  color: #b9a96a;
+  text-align: center;
+  margin-top: 10px;
+}
+
 #card-start-content {
   background-repeat: no-repeat;
   background-size: 100% 100%;

@@ -1,92 +1,114 @@
 <!DOCTYPE html>
 <html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Camera kit demo</title>
+    <meta name="description" content="Camera kit demo" />
+    <meta name="robots" content="noindex" />
+    <link href="index.css" rel="stylesheet" />
 
-<head>
-  <meta charset="utf-8" />
-  <title>Camera kit demo</title>
-  <meta name="description" content="Camera kit demo" />
-  <meta name="robots" content="noindex" />
-  <link href="index.css" rel="stylesheet" />
+    <meta
+      meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+  </head>
 
-  <meta meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-</head>
-
-<body>
-  <!-- <div class="poweredbysnap-logo">
+  <body>
+    <!-- <div class="poweredbysnap-logo">
       <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
     </div> -->
 
-  <canvas id="canvas"></canvas>
-  <video id="video" style="display: none" autoplay muted playsinline></video>
+    <canvas id="canvas"></canvas>
+    <video id="video" style="display: none" autoplay muted playsinline></video>
 
-  <div id="card-start">
-    <div id="card-start-content">
-      <img src="assets/logo_blanc.png" alt="logo" title="logo" />
-      <p>
-        Découvrez <span>le cadeau</span> que Bouygues Telecom a
-        <span>caché sous votre sapin</span>
-      </p>
-      <button onclick="closeStart()">Je découvre</button>
+    <div id="card-start">
+      <div id="card-start-content">
+        <img src="assets/logo_blanc.png" alt="logo" title="logo" />
+        <p>
+          Découvrez <span>le cadeau</span> que Bouygues Telecom a
+          <span>caché sous votre sapin</span>
+        </p>
+        <button onclick="closeStart()">Je découvre</button>
+      </div>
+
+      <div id="card-form">
+        <img src="assets/logo.png" alt="logo" title="logo" />
+        <form id="myForm">
+          <!-- classic html form firstname, lastname, email, phone, checkbox condition -->
+          <label for="lastname">Nom</label>
+          <input type="text" name="lastname" placeholder="" />
+          <label for="lastname">Prénom</label>
+          <input type="text" name="firstname" placeholder="" />
+          <label for="lastname">Email*</label>
+          <input type="email" name="email" placeholder="" required />
+          <label for="lastname">Téléphone*</label>
+          <input
+            type="tel"
+            name="phone"
+            placeholder=""
+            minlength="10"
+            maxlength="10"
+            required
+          />
+          <div>
+            <input
+              type="checkbox"
+              name="condition"
+              required
+              style="display: inline-block"
+            /><label style="display: contents" for="condition">
+              J’accepte les conditions du jeu concours.*</label
+            ></br>
+            <input
+              type="checkbox"
+              name="condition"
+              required
+              style="display: inline-block"
+            /><label style="display: contents" for="condition">
+              J’accepte de recevoir des offres commerciales de la société
+              Bouygues Telecom.*</label
+            >
+          </div>
+          <div id="form-message"></div>
+          <button type="submit">C'est parti!</button>
+        </form>
+      </div>
     </div>
 
-    <div id="card-form">
-      <img src="assets/logo.png" alt="logo" title="logo" />
-      <form id="myForm">
-        <!-- classic html form firstname, lastname, email, phone, checkbox condition -->
-        <label for="lastname">Nom</label>
-        <input type="text" name="lastname" placeholder="Nom" />
-        <label for="lastname">Prénom</label>
-        <input type="text" name="firstname" placeholder="Prénom" />
-        <label for="lastname">Email*</label>
-        <input type="email" name="email" placeholder="Email" required />
-        <label for="lastname">Téléphone*</label>
-        <input type="tel" name="phone" placeholder="Téléphone" required />
-        <div>
-          <input type="checkbox" name="condition" required style="display: inline-block" /><label
-            style="display: contents" for="condition">
-            I agree to the terms and conditions</label>
+    <div id="card-container">
+      <div id="card">
+        <br /><br /><br />
+        <div id="title">Félicitations !</div>
+        <div class="message">
+          Vous êtes le gagnant de notre jeu, vous remportez le smartphone de
+          votre choix avec un an de forfait offert
         </div>
-        <button type="submit">C'est parti!</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="card-container">
-    <div id="card">
-      <br /><br /><br />
-      <div id="title">Félicitations !</div>
-      <div class="message">
-        Vous êtes le gagnant de notre jeu, vous remportez le smartphone de
-        votre choix avec un an de forfait offert
-      </div>
-      <br /><br />
-      <div id="code">FFGB69685BG</div>
-      <div id="mail">placeholder mail</div>
-      <div class="message rdv">Rendez-vous :</div>
-      <div id="button1" class="button-container message">
-        <img class="button-img" src="assets/BOUTON 01.png" alt="" />
-        <div><u>En ligne</u></div>
-        <div style="flex: 1"></div>
-      </div>
-      <div id="button2" class="button-container message">
-        <img class="button-img" src="assets/BOUTON 02.png" alt="" />
-        <div>
-          Communiquez votre code à votre vendeur dans <u>votre boutique</u>
+        <br /><br />
+        <div id="code">FFGB69685BG</div>
+        <div id="mail">placeholder mail</div>
+        <div class="message rdv">Rendez-vous :</div>
+        <div id="button1" class="button-container message">
+          <img class="button-img" src="assets/BOUTON 01.png" alt="" />
+          <div><u>En ligne</u></div>
+          <div style="flex: 1"></div>
         </div>
-        <div style="flex: 1"></div>
+        <div id="button2" class="button-container message">
+          <img class="button-img" src="assets/BOUTON 02.png" alt="" />
+          <div>
+            Communiquez votre code à votre vendeur dans <u>votre boutique</u>
+          </div>
+          <div style="flex: 1"></div>
+        </div>
+        <br /><br /><br />
       </div>
-      <br /><br /><br />
     </div>
-  </div>
-  <script>
-    function closeStart() {
-      document.getElementById("card-start-content").style.display = "none";
-      document.getElementById("card-form").style.display = "flex";
-    }
-  </script>
-
-
-</body>
-
+    <script>
+      function closeStart() {
+        document.getElementById("card-start-content").style.display = "none";
+        document.getElementById("card-form").style.display = "flex";
+      }
+    </script>
+  </body>
 </html>
 <script src="./packed.js"></script>
