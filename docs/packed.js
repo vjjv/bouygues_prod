@@ -28043,7 +28043,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
         let responseContact = await postContact(obj);
         console.log(responseContact.message + " :: " + responseContact.mail);
         let responsePrize = await getPrize(obj.email);
-        console.log('Prize : '+ responsePrize.mail + ' / ' + responsePrize.code);
+        console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
 
     }
 
@@ -28080,9 +28080,9 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
 
 
-///////////////////
-//SNAPCHAT CODE////
-///////////////////
+    ///////////////////
+    //SNAPCHAT CODE////
+    ///////////////////
     const damsService = {
         apiSpecId: '87e3aee3-0a82-4fbd-8d71-b4534c79704c',
         getRequestHandler(request) {
@@ -28135,26 +28135,28 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
 
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
-    session.applyLens(lenses[0], { mail: "launch@param.com" });
-    setTimeout(()=>{
-        console.log('changing lens')
-        session.applyLens(lenses[1], { mail: "launch@param.com" });
-    },5000)
-    // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
-    let mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-            facingMode: 'environment'
-        }
-    });
-    const source = createMediaStreamSource(mediaStream, {
-        // transform: Transform2D.MirrorX,
-        fpsLimit: 30,
-        cameraType: 'back',
-    });
-    await session.setSource(source)
-    session.setSource(source)
-    session.source.setRenderSize(window.innerWidth, window.innerHeight)
-    session.play();
+    startLens(0);
+    setTimeout(() => startLens(1), 15000);
+
+    async function startLens(lens) {
+        session.applyLens(lenses[lens], { mail: "launch@param.com" });
+        // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
+        let mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: 'environment'
+            }
+        });
+        const source = createMediaStreamSource(mediaStream, {
+            // transform: Transform2D.MirrorX,
+            fpsLimit: 30,
+            cameraType: 'back',
+        });
+        await session.setSource(source)
+        session.setSource(source)
+        session.source.setRenderSize(window.innerWidth, window.innerHeight)
+        session.play();
+    }
+
 
     // canvas = document.querySelector('canvas');
     let ctx = canvas.getContext('webgl2');
