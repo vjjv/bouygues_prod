@@ -37,6 +37,7 @@ import {
         console.log(responseContact.message + " :: " + responseContact.mail);
         let responsePrize = await getPrize(obj.email);
         console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
+        startLens(1, responsePrize.mail, responsePrize.code)
 
     }
 
@@ -129,18 +130,20 @@ import {
 
     const { lenses } = await cameraKit.lensRepository.loadLensGroups(['19bedafd-5ca3-4431-898d-002694113ffe']);
     startLens(0);
-    setTimeout(() => startLens(1), 15000);
 
-    async function startLens(lens) {
+
+    let mediaStream;
+    let source;
+    async function startLens(lens, mail, code) {
         console.log('startlens '+lens);
-        session.applyLens(lenses[lens], { mail: "launch@param.com" });
+        session.applyLens(lenses[lens], { mail: mail, code: code });
         // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
-        let mediaStream = await navigator.mediaDevices.getUserMedia({
+        mediaStream = await navigator.mediaDevices.getUserMedia({
             video: {
                 facingMode: 'environment'
             }
         });
-        const source = createMediaStreamSource(mediaStream, {
+        source = createMediaStreamSource(mediaStream, {
             // transform: Transform2D.MirrorX,
             fpsLimit: 30,
             cameraType: 'back',
