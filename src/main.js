@@ -59,7 +59,7 @@ import {
     async function getPrize(mail) {
         return new Promise(async (resolve, reject) => {
             let res = await fetch('https://bouygues-404412.lm.r.appspot.com/prize?' + new URLSearchParams({
-                mail: `${obj.email}`,
+                mail: mail,
             }), {
                 method: 'GET',
             })

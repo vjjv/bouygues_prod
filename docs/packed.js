@@ -28041,7 +28041,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
     async function sendData(obj) {
         let responseContact = await postContact(obj);
-        console.log(responseContact.message + " : " + responseContact.mail);
+        console.log(responseContact.message + " :: " + responseContact.mail);
         let responsePrize = await getPrize(obj.email);
         console.log('Prize : '+ responsePrize.mail + ' / ' + responsePrize.code);
 
@@ -28066,7 +28066,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
     async function getPrize(mail) {
         return new Promise(async (resolve, reject) => {
             let res = await fetch('https://bouygues-404412.lm.r.appspot.com/prize?' + new URLSearchParams({
-                mail: `${obj.email}`,
+                mail: mail,
             }), {
                 method: 'GET',
             })
