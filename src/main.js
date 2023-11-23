@@ -132,6 +132,7 @@ import {
     setTimeout(() => startLens(1), 15000);
 
     async function startLens(lens) {
+        console.log('startlens '+lens);
         session.applyLens(lenses[lens], { mail: "launch@param.com" });
         // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
         let mediaStream = await navigator.mediaDevices.getUserMedia({
