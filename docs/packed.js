@@ -28023,10 +28023,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 (async function () {
 
     //FORM
-    function closeStart() {
-        document.getElementById("card-start-content").style.display = "none";
-        document.getElementById("card-form").style.display = "flex";
-    }
+
     const form = document.getElementById("myForm");
     form.addEventListener("submit", function (event) {
         // Prevent the default form submission behavior
@@ -28046,11 +28043,13 @@ console.info(`SDK: ${environment_namespaceObject.l} \
     //
 
     async function sendData(obj) {
+        console.log(obj);
         let response = await postContact(obj);
         console.log('youston ' + response.message + " : " + response.mail);
     }
     
     async function postContact(obj) {
+        console.log(obj);
         return new Promise(async (resolve, reject) => {
             let res = await fetch('https://bouygues-404412.lm.r.appspot.com/contact?' + new URLSearchParams({
                 email: obj.email,
