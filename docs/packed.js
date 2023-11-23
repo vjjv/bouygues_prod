@@ -28060,8 +28060,8 @@ console.info(`SDK: ${environment_namespaceObject.l} \
             }), {
                 method: 'POST',
             })
-            let obj = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
-            resolve(obj)
+            let objResponse = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+            resolve(objResponse)
         })
     }
 

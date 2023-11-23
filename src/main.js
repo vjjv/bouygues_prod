@@ -53,8 +53,8 @@ import {
             }), {
                 method: 'POST',
             })
-            let obj = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
-            resolve(obj)
+            let objResponse = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+            resolve(objResponse)
         })
     }
 
