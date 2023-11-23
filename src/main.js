@@ -15,8 +15,6 @@ import {
 
 (async function () {
 
-    //FORM
-
     const form = document.getElementById("myForm");
     form.addEventListener("submit", function (event) {
         // Prevent the default form submission behavior
@@ -33,20 +31,21 @@ import {
         console.log("Form Data as JSON:", formDataObject);
         sendData(formDataObject);
     });
-    //
 
     async function sendData(obj) {
         console.log(obj);
         let response = await postContact(obj);
-        console.log('youston ' + response.message + " : " + response.mail);
+        console.log(response.message + " : " + response.mail);
+        //start Lens
+
     }
-    
+
     async function postContact(obj) {
         return new Promise(async (resolve, reject) => {
             console.log(obj);
             let res = await fetch('https://bouygues-404412.lm.r.appspot.com/contact?' + new URLSearchParams({
                 email: `${obj.email}`,
-                fistname: `${obj.firstname}`,
+                firstname: `${obj.firstname}`,
                 lastname: `${obj.lastname}`,
                 phone: `${obj.phone}`,
                 condition: `${obj.condition}`,
@@ -63,12 +62,9 @@ import {
 
 
 
-
-
-
-
-
-
+///////////////////
+//SNAPCHAT CODE////
+///////////////////
     const damsService = {
         apiSpecId: '87e3aee3-0a82-4fbd-8d71-b4534c79704c',
         getRequestHandler(request) {
@@ -97,15 +93,9 @@ import {
     };
 
 
-    function carton(mail, code) {
-        document.getElementById("mail").textContent = mail;
-        document.getElementById("code").textContent = code;
-        document.getElementById('card-container').style.display = 'flex';
-    }
 
 
     //var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' })
-
     //V2 working here
     // var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-U1RBR0lOR34xOTcxMTQ2OC1jZTY3LTQ5OTgtYmQ5ZS0xNzAwNTRkYTk5NzgifQ.WzqacKQZQIh5SUMC7V45ndhVsk8jjI3BxiwhQVetkz4' }, (container) =>
     var cameraKit = await bootstrapCameraKit({ apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjk4NDEyNDI1LCJzdWIiOiIxMzk1NDk4MC1hYjQwLTQwMTAtYThhZi02NmI5NWYyM2RlYmR-UFJPRFVDVElPTn4xN2IzNWUzZC1iZWYwLTQxNzUtYTA2Ny05NTNiYmIyOGYyNTQifQ.tqyXjMntFKLnubtZailODeASvccrQziURDt1shDsznE' }, (container) =>
