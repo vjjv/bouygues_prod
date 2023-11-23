@@ -150,10 +150,10 @@ import {
     console.log(ctx);
     var rgba;
     var out;
-    setInterval(() => {
+    setTimeout(() => {
         ctx = canvas.getContext('webgl2');
         out = new Uint8Array(4);
-        ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
+        ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.FLOAT, out); //UNSIGNED_BYTE, FLOAT, INT, BYTE   //RGBA_INTEGER
         console.log('result');
         console.log(out);
 
