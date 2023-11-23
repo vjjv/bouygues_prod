@@ -89,28 +89,5 @@
   </body>
 </html>
 <script>
-  function closeStart() {
-    document.getElementById("card-start-content").style.display = "none";
-    document.getElementById("card-form").style.display = "flex";
-  }
 
-  const form = document.getElementById("myForm");
-
-  form.addEventListener("submit", function (event) {
-    // Prevent the default form submission behavior
-    event.preventDefault();
-
-    // Your custom logic when the form is submitted
-    console.log("Form submitted!");
-    document.getElementById("card-start").style.display = "none";
-
-    // You can access form data using form elements, for example:
-
-    const formData = new FormData(form);
-    const formDataObject = {};
-    formData.forEach(function (value, key) {
-      formDataObject[key] = value;
-    });
-    console.log("Form Data as JSON:", formDataObject);
-  });
 </script>

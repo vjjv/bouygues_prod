@@ -15,6 +15,60 @@ import {
 
 (async function () {
 
+    //FORM
+    function closeStart() {
+        document.getElementById("card-start-content").style.display = "none";
+        document.getElementById("card-form").style.display = "flex";
+    }
+    const form = document.getElementById("myForm");
+    form.addEventListener("submit", function (event) {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+        // Your custom logic when the form is submitted
+        console.log("Form submitted!");
+        document.getElementById("card-start").style.display = "none";
+        // You can access form data using form elements, for example:
+        const formData = new FormData(form);
+        const formDataObject = {};
+        formData.forEach(function (value, key) {
+            formDataObject[key] = value;
+        });
+        console.log("Form Data as JSON:", formDataObject);
+        sendData(formDataObject);
+    });
+    //
+
+    async function sendData(obj) {
+        let response = await postContact(obj);
+        console.log('youston ' + response.message + " : " + response.mail);
+    }
+    
+    async function postContact(obj) {
+        return new Promise(async (resolve, reject) => {
+            let res = await fetch('https://bouygues-404412.lm.r.appspot.com/contact?' + new URLSearchParams({
+                email: obj.email,
+                fistname: obj.firstname,
+                lastname: obj.lastname,
+                phone: obj.phone,
+                condition: obj.condition,
+            }), {
+                method: 'POST',
+            })
+            let obj = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+            resolve(obj)
+        })
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     const damsService = {
         apiSpecId: '87e3aee3-0a82-4fbd-8d71-b4534c79704c',
@@ -97,11 +151,11 @@ import {
     var rgba;
     var out;
     setInterval(() => {
-      ctx = canvas.getContext('webgl2');
-      out = new Uint8Array(4);
-      ctx.readPixels(0, 0, 1, 1, ctx.RGB, ctx.UNSIGNED_BYTE, out);
-      console.log('result');
-      console.log(out);
+        ctx = canvas.getContext('webgl2');
+        out = new Uint8Array(4);
+        ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.UNSIGNED_BYTE, out);
+        console.log('result');
+        console.log(out);
 
     }, 1000)
 
