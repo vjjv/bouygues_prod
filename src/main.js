@@ -50,7 +50,7 @@ import {
 
     async function sendData(obj) {
         let responseContact = await postContact(obj);
-        console.log(responseContact.message + " :: " + responseContact.mail);
+        console.log(responseContact.message + " ::: " + responseContact.mail);
         let randomizer = await getRandomizer();
         console.log('Randomizer : ' + randomizer);
         let userRandom = Math.floor(Math.random() * randomizer);
