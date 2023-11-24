@@ -15,7 +15,6 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: red;
   color: #0e373c;
 }
 @media screen and (min-width: 1080px) {
