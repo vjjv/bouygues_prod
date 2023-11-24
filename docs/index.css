@@ -7,10 +7,66 @@
   src: url("assets/BouyguesRead-Medium.otf") format("opentype");
 }
 
+*.color-gold {
+  color: #b9a96a !important;
+}
+
 body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background: red;
+  color: #0e373c;
+}
+@media screen and (min-width: 1080px) {
+  #mobile {
+    display: none;
+  }
+  body {
+    background-image: url("assets/background/bg-desktop.jpg");
+    background-size: auto;
+    background-position: right -100px;
+  }
+}
+@media screen and (max-width: 1080px) {
+  #desktop {
+    display: none;
+  }
+}
+
+#desktop .card-content {
+  position: absolute;
+  right: 3%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 60%;
+  width: 50%;
+  max-width: 500px;
+  max-height: 600px;
+  font-size: 1.3rem;
+  gap: 3vh;
+  padding: 2% 5%;
+}
+
+#desktop .card-content h2 {
+  font-size: 1.7rem;
+}
+
+#desktop .card-content .logo {
+  min-width: 202px;
+}
+.qrcode {
+  margin-top: 12px;
+  max-width: 150px;
+  width: 30%;
+}
+
+.btn-gold {
+  color: white;
+  background-color: #b9a96a;
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-size: 1.5rem;
 }
 
 #output-canvas {
@@ -82,7 +138,77 @@ body {
   position: absolute;
 }
 
+#info {
+  border-radius: 25px;
+  position: absolute;
+  top: 5vh;
+  right: 5vw;
+  background: transparent;
+  border: 0px;
+  display: inline-block;
+  font-family: Bouygues-Bold;
+  color: #0e373c;
+}
+
+#info-card-wrapper {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#info-card {
+  border-radius: 20px;
+  font-family: Bouygues-Regular;
+  color: #0e373c;
+  font-size: 1.2rem;
+  text-align: center;
+  position: relative;
+}
+
+#info-card .closebutton {
+  border-radius: 25px;
+  position: absolute;
+  top: 3%;
+  right: 5%;
+  background: #b9a96a;
+  border: 0px;
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  color: white;
+  padding: 0;
+  font-size: 1rem;
+}
+
+#card-stop {
+  display: none;
+}
+
+.bold {
+  font-family: Bouygues-Bold;
+  font-weight: 400;
+}
+
+.card-content h2 {
+  font-family: Bouygues-Bold;
+  font-size: 24px;
+  margin: 0;
+  color: #0e373c;
+  text-align: center;
+}
+
+#info-card a {
+  color: #0e373c;
+}
+
 #card-start {
+  pointer-events: none;
   display: flex;
   width: 100vw;
   height: 100vh;
@@ -92,50 +218,60 @@ body {
   position: absolute;
 }
 
-#card-start-content {
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  height: 60%;
-  width: 60%;
+.card-content {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  width: 80%;
+  pointer-events: all;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  gap: 16px;
+  font-family: Bouygues-Regular;
 }
 
-#card-start-content img {
-  width: 90%;
-  margin-bottom: 3vh;
+.card-content .logo {
+  width: 60%;
 }
 
-#card-start-content p {
-  background-color: white;
-  padding: 3vh 10%;
+#form-message {
+  color: #b9a96a;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.card-content p {
   border-radius: 20px;
-  font-size: 1.5rem;
+  font-size: 24px;
   text-align: center;
   color: #0e373c;
   font-family: Bouygues-Bold;
   font-weight: bold;
   margin: 0;
+  align-self: stretch;
 }
+
 #card-start-content p span {
   color: #b9a96a;
   font-family: Bouygues-Bold;
   font-weight: bold;
 }
 
-#card-form button,
-#card-start-content button {
+.card-content button {
   font-size: 1.1rem;
   padding: 1vh 10%;
   border: 0px;
   color: #ffffff;
   border-radius: 100px;
   background-color: #b9a96a;
-  font-family: Bouygues-Bold;
+  font-family: Bouygues-Regular;
   text-align: center;
-  margin-top: 30px;
+  border-radius: 4px;
+  width: 100%;
 }
 
 #card-form {
@@ -154,30 +290,64 @@ body {
 }
 
 #card-form img {
-  width: 70%;
-  margin-bottom: 4vh;
+  margin-bottom: 8px;
+}
+
+.innericon {
+  margin-right: 10px;
+}
+.icon-user::before {
+  content: url("assets/icon/user.svg");
+}
+.icon-phone::before {
+  content: url("assets/icon/phone.svg");
+}
+.icon-email::before {
+  content: url("assets/icon/envelope.svg");
+}
+.icon-desktop::before {
+  content: url("assets/icon/desktop.svg");
 }
 
 #card-form form {
-  width: 80%;
+  width: 85%;
   display: flex;
   flex-direction: column;
   font-size: 1rem;
+  gap: 16px;
 }
-#card-form input:not([type="checkbox"]) {
-  width: 80%;
+#card-form .inputgroup {
   font-size: 1rem;
-  border-radius: 25px;
+  border-radius: 4px;
   border: 1px solid #0e373c;
   font-family: Bouygues-Regular;
-  margin-bottom: 1vh;
-  padding: 0.5vh 10%;
+  padding: 16px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+#card-form .inputgroup input {
+  border: none;
+  width: 100%;
+}
+#card-form .inputgroup input:focus {
+  outline: none;
+}
+
 #card-form label {
   display: block;
   font-family: Bouygues-Regular;
   color: #0e373c;
   margin-bottom: 0.5vh;
+  font-weight: 400;
+}
+
+#card-form .checkboxes {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 #card-container {
