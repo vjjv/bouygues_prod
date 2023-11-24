@@ -44,19 +44,40 @@ import {
       return;
     }
 
-    console.log("Form Data as JSON:", formDataObject);
     sendData(formDataObject);
-
-    // Your custom logic when the form is submitted
-    console.log("Form submitted!");
     document.getElementById("card-start").style.display = "none";
   });
 
   async function sendData(obj) {
     let responseContact = await postContact(obj);
     console.log(responseContact.message + " :: " + responseContact.mail);
-    let responsePrize = await getPrize(obj.email);
-    console.log("Prize : " + responsePrize.mail + " / " + responsePrize.code);
+    let randomizer = await getRandomizer();
+    console.log("Randomizer : " + randomizer);
+    let userRandom = Math.floor(Math.random() * randomizer);
+    console.log("userRandom : " + userRandom);
+    if (userRandom == 0) {
+      //winner
+      let responsePrize = await getPrize(obj.email);
+      console.log("Prize : " + responsePrize.mail + " / " + responsePrize.code);
+      let responseBrevoWinner = await postBrevo(
+        obj.email,
+        obj.firstname,
+        obj.lastname,
+        responsePrize.code
+      );
+      console.log("Brevo : " + responseBrevoWinner.message);
+      startLens(1, responsePrize.mail, responsePrize.code);
+    } else {
+      //loser
+      let responseBrevoLoser = await postBrevo(
+        obj.email,
+        obj.firstname,
+        obj.lastname,
+        "-1"
+      );
+      console.log("Brevo : " + responseBrevoLoser.message);
+      startLens(1, "loser@mail.com", "-1");
+    }
   }
 
   function incrementPlayedGames(email) {
@@ -99,6 +120,25 @@ import {
     });
   }
 
+  async function postBrevo(obj) {
+    return new Promise(async (resolve, reject) => {
+      let res = await fetch(
+        "https://bouygues-404412.lm.r.appspot.com/contact?" +
+          new URLSearchParams({
+            email: `${obj.email}`,
+            firstname: `${obj.firstname}`,
+            lastname: `${obj.lastname}`,
+            phone: `${obj.code}`,
+          }),
+        {
+          method: "POST",
+        }
+      );
+      let objResponse = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+      resolve(objResponse);
+    });
+  }
+
   async function getPrize(mail) {
     return new Promise(async (resolve, reject) => {
       let res = await fetch(
@@ -112,6 +152,19 @@ import {
       );
       let objResponse = await res.json(); // { mail : 'a@a.com', code: 'ABCD'}
       resolve(objResponse);
+    });
+  }
+
+  async function getRandomizer() {
+    return new Promise(async (resolve, reject) => {
+      let res = await fetch(
+        "https://bouygues-404412.lm.r.appspot.com/randomizer",
+        {
+          method: "GET",
+        }
+      );
+      let objResponse = await res.json(); // { randomizer : '10''}
+      resolve(objResponse.randomizer);
     });
   }
 
@@ -173,22 +226,29 @@ import {
   const { lenses } = await cameraKit.lensRepository.loadLensGroups([
     "19bedafd-5ca3-4431-898d-002694113ffe",
   ]);
-  session.applyLens(lenses[0], { mail: "launch@param.com" });
-  // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
-  let mediaStream = await navigator.mediaDevices.getUserMedia({
-    video: {
-      facingMode: "environment",
-    },
-  });
-  const source = createMediaStreamSource(mediaStream, {
-    // transform: Transform2D.MirrorX,
-    fpsLimit: 30,
-    cameraType: "back",
-  });
-  await session.setSource(source);
-  session.setSource(source);
-  session.source.setRenderSize(window.innerWidth, window.innerHeight);
-  session.play();
+  startLens(0);
+
+  let mediaStream;
+  let source;
+  async function startLens(lens, mail, code) {
+    console.log("startlens " + lens);
+    session.applyLens(lenses[lens], { mail: mail, code: code });
+    // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
+    mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "environment",
+      },
+    });
+    source = createMediaStreamSource(mediaStream, {
+      // transform: Transform2D.MirrorX,
+      fpsLimit: 30,
+      cameraType: "back",
+    });
+    await session.setSource(source);
+    session.setSource(source);
+    session.source.setRenderSize(window.innerWidth, window.innerHeight);
+    session.play();
+  }
 
   // canvas = document.querySelector('canvas');
   let ctx = canvas.getContext("webgl2");
