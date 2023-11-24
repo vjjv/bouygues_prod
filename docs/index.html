@@ -17,14 +17,14 @@
   <body>
     <div id="desktop">
       <div class="card-content">
-        <img src="assets/logo.png" class="logo" alt="logo" title="logo" />
+        <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
         <div class="btn-gold">Jeu concours</div>
         <h2>
           Découvrez <span class="color-gold">le cadeau</span> que Bouygues
           Telecom a <span class="color-gold">caché sous votre sapin</span>
         </h2>
         <div>Scannez le QR code ci-dessous</div>
-        <img src="assets/qr.png" class="qrcode" alt="QRCode" />
+        <img src="./assets/qr.png" class="qrcode" alt="QRCode" />
       </div>
     </div>
     <div id="mobile">
@@ -42,7 +42,7 @@
       ></video>
 
       <button onclick="openInfoCard()" id="info">
-        <img src="assets/question-circle.svg" />
+        <img src="./assets/question-circle.svg" />
       </button>
       <div id="info-card-wrapper">
         <div id="info-card" class="card-content">
@@ -56,24 +56,26 @@
               target="_blank"
               >Bouyguestelecom.fr</a
             >
-            <img style="margin-left: 10px" src="assets/icon/desktop.svg" />
+            <img style="margin-left: 10px" src="./assets/icon/desktop.svg" />
           </div>
           <div>
             <a
-              href="https://www.bouyguestelecom.fr/"
+              href="https://boutiques.bouyguestelecom.fr/bouyguestelecom/fr"
               class="bold"
               target="_blank"
               >En boutique</a
             >
-            <img style="margin-left: 10px" src="assets/icon/map.svg" />
+            <img style="margin-left: 10px" src="./assets/icon/map.svg" />
           </div>
           <div>
-            <a href="https://www.bouyguestelecom.fr/" target="_blank"
+            <a href="./assets/bouygues-telecom-reglement.pdf" target="_blank"
               >Règlement du jeu</a
             >
           </div>
           <div>
-            <a href="https://www.bouyguestelecom.fr/" target="_blank"
+            <a
+              href="https://www.corporate.bouyguestelecom.fr/mentions-legales/politique-dutilisation-des-donnees-personnelles/"
+              target="_blank"
               >Politique de confidentialité</a
             >
           </div>
@@ -82,7 +84,7 @@
 
       <div id="card-start">
         <div id="card-start-content" class="card-content">
-          <img src="assets/logo.png" class="logo" alt="logo" title="logo" />
+          <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
           <p>
             Découvrez <span>le cadeau</span> que Bouygues Telecom a
             <span>caché sous votre sapin</span>
@@ -91,7 +93,7 @@
         </div>
 
         <div id="card-form" class="card-content">
-          <img src="assets/logo.png" class="logo" alt="logo" title="logo" />
+          <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
           <form id="myForm">
             <div class="inputgroup">
               <span class="innericon icon-user"></span>
@@ -127,7 +129,12 @@
                   required
                   style="display: inline-block"
                 /><label style="display: contents" for="condition">
-                  J’accepte les conditions du jeu concours.*</label
+                  J’accepte les conditions du
+                  <a
+                    href="./assets/bouygues-telecom-reglement.pdf"
+                    target="_blank"
+                    >jeu concours</a
+                  >.*</label
                 >
               </div>
 
@@ -135,19 +142,11 @@
                 <input
                   type="checkbox"
                   name="condition"
-                  required
                   style="display: inline-block"
                 /><label style="display: contents" for="condition">
                   J’accepte de recevoir des offres commerciales de la société
                   Bouygues Telecom.*</label
                 >
-              </div>
-              <div style="display: flex; font-weight: 500">
-                <div>*Règlement du jeu accessible dans le bouton</div>
-                <img
-                  src="assets/question-circle-blue.svg"
-                  onclick="openInfoCard()"
-                />
               </div>
             </div>
             <div id="form-message"></div>
@@ -161,14 +160,14 @@
             Profitez de l'offre en magasin, un accesoire au choix offert* avec
             votre forfait 150Go et +
           </h2>
-          <img src="assets/3products.jpg" />
+          <img src="./assets/3products.jpg" />
           <div style="display: flex">
             <div>
               *Après remboursement, Liste des boutiques participantes accessible
               dans le bouton
             </div>
             <img
-              src="assets/question-circle-blue.svg"
+              src="./assets/question-circle-blue.svg"
               onclick="openInfoCard()"
             />
           </div>
@@ -188,12 +187,12 @@
           <div id="mail">placeholder mail</div>
           <div class="message rdv">Rendez-vous :</div>
           <div id="button1" class="button-container message">
-            <img class="button-img" src="assets/BOUTON 01.png" alt="" />
+            <img class="button-img" src="./assets/BOUTON 01.png" alt="" />
             <div><u>En ligne</u></div>
             <div style="flex: 1"></div>
           </div>
           <div id="button2" class="button-container message">
-            <img class="button-img" src="assets/BOUTON 02.png" alt="" />
+            <img class="button-img" src="./assets/BOUTON 02.png" alt="" />
             <div>
               Communiquez votre code à votre vendeur dans <u>votre boutique</u>
             </div>
