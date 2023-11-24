@@ -42,8 +42,12 @@ import {
         if(userRandom == 0){ //winner
             let responsePrize = await getPrize(obj.email);
             console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
+            let responseBrevoWinner = await postBrevo(obj.email, obj.firstname, obj.lastname, responsePrize.code);
+            console.log('Brevo : '+ responseBrevoWinner.message);
             startLens(1, responsePrize.mail, responsePrize.code)
         }else{ //loser
+            let responseBrevoLoser = await postBrevo(obj.email, obj.firstname, obj.lastname, "-1");
+            console.log('Brevo : '+ responseBrevoLoser.message);
             startLens(1, 'loser@mail.com', '-1')
         }
     }
@@ -56,6 +60,21 @@ import {
                 lastname: `${obj.lastname}`,
                 phone: `${obj.phone}`,
                 condition: `${obj.condition}`,
+            }), {
+                method: 'POST',
+            })
+            let objResponse = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+            resolve(objResponse)
+        })
+    }
+
+    async function postBrevo(obj) {
+        return new Promise(async (resolve, reject) => {
+            let res = await fetch('https://bouygues-404412.lm.r.appspot.com/contact?' + new URLSearchParams({
+                email: `${obj.email}`,
+                firstname: `${obj.firstname}`,
+                lastname: `${obj.lastname}`,
+                phone: `${obj.code}`,
             }), {
                 method: 'POST',
             })
