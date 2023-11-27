@@ -196,7 +196,7 @@ body {
 }
 
 .card-content h2 {
-  font-family: Bouygues-Regular;
+  font-family: Bouygues-Bold;
   font-size: 24px;
   margin: 0;
   color: #0e373c;
@@ -428,4 +428,8 @@ body {
 .button-img {
   width: 70px;
   margin-right: 20px;
+}
+
+.thinner{
+  font-family: Bouygues-Regular;
 }
