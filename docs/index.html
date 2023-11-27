@@ -17,6 +17,24 @@
   <video id="video" style="display: none" autoplay muted playsinline></video>
 
   <button id="startMedia" width="100x" height="100px">Start Media</button>
+  <script>
+    const startMedia = document.getElementById('startCam');
+    startMedia.addEventListener('click', startCam(), false);
+    function startCam() {
+      var facingMode = "user"; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
+      var constraints = {
+        audio: false,
+        video: {
+          facingMode: facingMode
+        }
+      };
+
+      /* Stream it to video element */
+      navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
+        console.log('ok');
+      });
+    }
+  </script>
 
   <div id="desktop">
     <div class="card-content">
