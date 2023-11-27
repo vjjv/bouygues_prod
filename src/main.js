@@ -66,8 +66,8 @@ import {
             console.log('Brevo : ' + responseBrevoWinner.message);
             startLens(1, responsePrize.mail, responsePrize.code)
         } else { //loser
-            let responseBrevoLoser = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: "-1" });
-            console.log('Brevo : ' + responseBrevoLoser.message);
+            //let responseBrevoLoser = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: "-1" });
+            console.log('Brevo : ' + 'No mail sent because you lost');
             startLens(1, 'loser@mail.com', '-1')
         }
     }

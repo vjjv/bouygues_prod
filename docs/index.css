@@ -17,7 +17,10 @@ body {
   overflow: hidden;
   color: #0e373c;
   /* background-color: #0e373c; */
-  background-image: url(assets/background/bg-desktop.jpg);
+  background-image: url(assets/background/fond_mobile_ios.jpg);
+  background-attachment:fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 @media screen and (min-width: 1080px) {
   #mobile {
