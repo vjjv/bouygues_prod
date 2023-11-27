@@ -28020,6 +28020,24 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
 
 (async function () {
+
+    const startMedia = document.getElementById('startCam');
+    startMedia.addEventListener('click', startCam(), false);
+    function startCam() {
+        var facingMode = "user"; // Can be 'user' or 'environment' to access back or front camera (NEAT!)
+        var constraints = {
+            audio: false,
+            video: {
+                facingMode: facingMode
+            }
+        };
+
+        /* Stream it to video element */
+        navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
+            console.log('ok');
+        });
+    }
+
     const form = document.getElementById("myForm");
     form.addEventListener("submit", function (event) {
         // Prevent the default form submission behavior
@@ -28243,14 +28261,14 @@ console.info(`SDK: ${environment_namespaceObject.l} \
         });
         await session.setSource(source);
         session.setSource(source);
-        session.source.setRenderSize(window.innerWidth*1.5, window.innerHeight*1.5);
+        session.source.setRenderSize(window.innerWidth * 1.5, window.innerHeight * 1.5);
         session.play();
         let canvasRender = document.querySelector('canvas');
         canvasRender.style.width = '100%'
         canvasRender.style.height = '100%'
     }
-  
-    
+
+
     // let ctx = canvas.getContext("webgl2");
     // console.log(ctx);
     // var rgba;
