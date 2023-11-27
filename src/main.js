@@ -237,16 +237,19 @@ import {
         session.play();
     }
 
-    // canvas = document.querySelector('canvas');
-    let ctx = canvas.getContext("webgl2");
-    console.log(ctx);
-    var rgba;
-    var out;
-    setTimeout(() => {
-        ctx = canvas.getContext("webgl2");
-        out = new Uint8Array(4);
-        ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.FLOAT, out); //UNSIGNED_BYTE, FLOAT, INT, BYTE   //RGBA_INTEGER
-        console.log("result");
-        console.log(out);
-    }, 1000);
+    canvasRender = document.querySelector('canvas');
+    canvasRender.style.width = '100%'
+    canvasRender.style.height = '100%'
+    
+    // let ctx = canvas.getContext("webgl2");
+    // console.log(ctx);
+    // var rgba;
+    // var out;
+    // setTimeout(() => {
+    //     ctx = canvas.getContext("webgl2");
+    //     out = new Uint8Array(4);
+    //     ctx.readPixels(0, 0, 1, 1, ctx.RGBA, ctx.FLOAT, out); //UNSIGNED_BYTE, FLOAT, INT, BYTE   //RGBA_INTEGER
+    //     console.log("result");
+    //     console.log(out);
+    // }, 1000);
 })();
