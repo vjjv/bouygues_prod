@@ -1,242 +1,189 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Jeu concours Bouygues Telecom</title>
-    <meta name="description" content="Camera kit demo" />
-    <meta name="robots" content="noindex" />
-    <link href="index.css" rel="stylesheet" />
 
-    <meta
-      meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-    />
-  </head>
+<head>
+  <meta charset="utf-8" />
+  <title>Jeu concours Bouygues Telecom</title>
+  <meta name="description" content="Camera kit demo" />
+  <meta name="robots" content="noindex" />
+  <link href="index.css" rel="stylesheet" />
 
-  <body>
-    <!-- <div id="desktop">
-      <div class="card-content">
-        <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
-        <div class="btn-gold">Jeu concours</div>
-        <h2>
-          Découvrez <span class="color-gold">le cadeau</span> que Bouygues
-          Telecom a <span class="color-gold">caché sous votre sapin</span>
-        </h2>
-        <div>Scannez le QR code ci-dessous</div>
-        <img src="./assets/qr.png" class="qrcode" alt="QRCode" />
-      </div>
-    </div> -->
-    
-    
-          <!-- <div class="poweredbysnap-logo">
+  <meta meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+</head>
+
+<body>
+  <div id="desktop">
+    <div class="card-content">
+      <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
+      <div class="btn-gold">Jeu concours</div>
+      <h2>
+        Découvrez <span class="color-gold">le cadeau</span> que Bouygues
+        Telecom a <span class="color-gold">caché sous votre sapin</span>
+      </h2>
+      <div>Scannez le QR code ci-dessous</div>
+      <img src="./assets/qr.png" class="qrcode" alt="QRCode" />
+    </div>
+  </div>
+
+
+  <!-- <div class="poweredbysnap-logo">
       <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
       </div> -->
-    <!-- <div id="mobile">
-     
+
+  <canvas id="canvas"></canvas>
+  <video id="video" style="display: none" autoplay muted playsinline></video>
+  <div id="mobile">
 
 
-      <canvas id="canvas"></canvas>
-      <video
-        id="video"
-        style="display: none"
-        autoplay
-        muted
-        playsinline
-      ></video>
 
-      <button onclick="openInfoCard()" id="info">
-        <img src="./assets/question-circle.svg" />
-      </button>
-      <div id="info-card-wrapper">
-        <div id="info-card" class="card-content">
-          <button class="closebutton" onclick="closeInfoCard()">✖</button>
-          <h2 class="bold">Informations utiles</h2>
-          <div class="bold">Plus d'information sur :</div>
-          <div>
-            <a
-              href="https://www.bouyguestelecom.fr/accessoires"
-              class="bold"
-              target="_blank"
-              >Les offres accessoires</a
-            >
-            <img style="margin-left: 10px" src="./assets/icon/desktop.svg" />
-          </div>
-          <div>
-            <a
-              href="https://boutiques.bouyguestelecom.fr/bouyguestelecom/fr"
-              class="bold"
-              target="_blank"
-              >les boutiques participantes</a
-            ><img style="margin-left: 10px" src="./assets/icon/map.svg" />
-          </div>
-          <div>
-            <a
-              href="https://www.bouyguestelecom.fr/bons-plans/noel"
-              class="bold"
-              target="_blank"
-              >Les bons plan de Noël</a
-            >
-            <img style="margin-left: 10px" src="./assets/icon/desktop.svg" />
-          </div>
-          <div></div>
-          <div></div>
-          <div>
-            <a href="./assets/bouygues-telecom-reglement.pdf" target="_blank"
-              >Règlement du jeu</a
-            >
-          </div>
-          <div>
-            <a
-              href="https://www.corporate.bouyguestelecom.fr/mentions-legales/politique-dutilisation-des-donnees-personnelles/"
-              target="_blank"
-              >Politique de confidentialité</a
-            >
-          </div>
+
+    <button onclick="openInfoCard()" id="info">
+      <img src="./assets/question-circle.svg" />
+    </button>
+    <div id="info-card-wrapper">
+      <div id="info-card" class="card-content">
+        <button class="closebutton" onclick="closeInfoCard()">✖</button>
+        <h2 class="bold">Informations utiles</h2>
+        <div class="bold">Plus d'information sur :</div>
+        <div>
+          <a href="https://www.bouyguestelecom.fr/accessoires" class="bold" target="_blank">Les offres accessoires</a>
+          <img style="margin-left: 10px" src="./assets/icon/desktop.svg" />
+        </div>
+        <div>
+          <a href="https://boutiques.bouyguestelecom.fr/bouyguestelecom/fr" class="bold" target="_blank">les boutiques
+            participantes</a><img style="margin-left: 10px" src="./assets/icon/map.svg" />
+        </div>
+        <div>
+          <a href="https://www.bouyguestelecom.fr/bons-plans/noel" class="bold" target="_blank">Les bons plan de
+            Noël</a>
+          <img style="margin-left: 10px" src="./assets/icon/desktop.svg" />
+        </div>
+        <div></div>
+        <div></div>
+        <div>
+          <a href="./assets/bouygues-telecom-reglement.pdf" target="_blank">Règlement du jeu</a>
+        </div>
+        <div>
+          <a href="https://www.corporate.bouyguestelecom.fr/mentions-legales/politique-dutilisation-des-donnees-personnelles/"
+            target="_blank">Politique de confidentialité</a>
         </div>
       </div>
+    </div>
 
-      <div id="card-start">
-        <div id="card-start-content" class="card-content">
-          <div style="text-align: center">
-            <img
-              src="./assets/logo.png"
-              class="logo"
-              alt="logo le filtre à cadeaux"
-              title="logo"
-            />
+    <div id="card-start">
+      <div id="card-start-content" class="card-content">
+        <div style="text-align: center">
+          <img src="./assets/logo.png" class="logo" alt="logo le filtre à cadeaux" title="logo" />
+        </div>
+        <p>
+          Découvrez <span>le cadeau</span> que Bouygues Telecom a
+          <span>caché sous votre sapin</span>
+        </p>
+        <button onclick="closeStart()">Je découvre</button>
+      </div>
+
+      <div id="card-form" class="card-content">
+        <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
+        <form id="myForm">
+          <div class="inputgroup">
+            <span class="innericon icon-user"></span>
+            <input type="text" name="lastname" placeholder="Nom" />
           </div>
-          <p>
-            Découvrez <span>le cadeau</span> que Bouygues Telecom a
-            <span>caché sous votre sapin</span>
-          </p>
-          <button onclick="closeStart()">Je découvre</button>
-        </div>
 
-        <div id="card-form" class="card-content">
-          <img src="./assets/logo.png" class="logo" alt="logo" title="logo" />
-          <form id="myForm">
-            <div class="inputgroup">
-              <span class="innericon icon-user"></span>
-              <input type="text" name="lastname" placeholder="Nom" />
-            </div>
+          <div class="inputgroup">
+            <span class="innericon icon-user"></span>
+            <input type="text" name="firstname" placeholder="Prénom" />
+          </div>
 
-            <div class="inputgroup">
-              <span class="innericon icon-user"></span>
-              <input type="text" name="firstname" placeholder="Prénom" />
-            </div>
+          <div class="inputgroup">
+            <span class="innericon icon-email"></span>
+            <input type="email" name="email" placeholder="Email" required />
+          </div>
 
-            <div class="inputgroup">
-              <span class="innericon icon-email"></span>
-              <input type="email" name="email" placeholder="Email" required />
-            </div>
-
-            <div class="inputgroup">
-              <span class="innericon icon-phone"></span>
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Téléphone"
-                minlength="10"
-                maxlength="10"
-                required
-              />
-            </div>
-            <div class="checkboxes">
-              <div>
-                <input
-                  type="checkbox"
-                  name="condition"
-                  required
-                  style="display: inline-block"
-                /><label style="display: contents" for="condition">
-                  J’accepte les
-                  <a
-                    href="./assets/bouygues-telecom-reglement.pdf"
-                    target="_blank"
-                    >conditions du jeu</a
-                  >.*</label
-                >
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  name="condition"
-                  style="display: inline-block"
-                /><label style="display: contents" for="condition">
-                  J’accepte de recevoir des offres commerciales de la société
-                  Bouygues Telecom.</label
-                >
-              </div>
-            </div>
-            <button type="submit">C'est parti!</button>
-          </form>
-        </div>
-
-        <div id="card-stop" class="card-content">
-          <h2>Vous avez déjà participé 3 fois !</h2>
-          <h2 class="color-gold thinner">
-            Un accessoire offert* ou 50€ remboursés sur une sélection d'accessoires
-          </h2>
-          <img src="./assets/3products.jpg" />
-          <div style="display: flex">
+          <div class="inputgroup">
+            <span class="innericon icon-phone"></span>
+            <input type="tel" name="phone" placeholder="Téléphone" minlength="10" maxlength="10" required />
+          </div>
+          <div class="checkboxes">
             <div>
-              *Après remboursement, Liste des boutiques participantes accessible
-              dans le bouton
+              <input type="checkbox" name="condition" required style="display: inline-block" /><label
+                style="display: contents" for="condition">
+                J’accepte les
+                <a href="./assets/bouygues-telecom-reglement.pdf" target="_blank">conditions du jeu</a>.*</label>
             </div>
-            <img
-              src="./assets/question-circle-blue.svg"
-              onclick="openInfoCard()"
-            />
-          </div>
-        </div>
-      </div>
 
-      <div id="card-container">
-        <div id="card">
-          <br /><br /><br />
-          <div id="title">Félicitations !</div>
-          <div class="message">
-            Vous êtes le gagnant de notre jeu, vous remportez le smartphone de
-            votre choix avec un an de forfait offert
-          </div>
-          <br /><br />
-          <div id="code">FFGB69685BG</div>
-          <div id="mail">placeholder mail</div>
-          <div class="message rdv">Rendez-vous :</div>
-          <div id="button1" class="button-container message">
-            <img class="button-img" src="./assets/BOUTON 01.png" alt="" />
-            <div><u>En ligne</u></div>
-            <div style="flex: 1"></div>
-          </div>
-          <div id="button2" class="button-container message">
-            <img class="button-img" src="./assets/BOUTON 02.png" alt="" />
             <div>
-              Communiquez votre code à votre vendeur dans <u>votre boutique</u>
+              <input type="checkbox" name="condition" style="display: inline-block" /><label style="display: contents"
+                for="condition">
+                J’accepte de recevoir des offres commerciales de la société
+                Bouygues Telecom.</label>
             </div>
-            <div style="flex: 1"></div>
           </div>
-          <br /><br /><br />
+          <button type="submit">C'est parti!</button>
+        </form>
+      </div>
+
+      <div id="card-stop" class="card-content">
+        <h2>Vous avez déjà participé 3 fois !</h2>
+        <h2 class="color-gold thinner">
+          Un accessoire offert* ou 50€ remboursés sur une sélection d'accessoires
+        </h2>
+        <img src="./assets/3products.jpg" />
+        <div style="display: flex">
+          <div>
+            *Après remboursement, Liste des boutiques participantes accessible
+            dans le bouton
+          </div>
+          <img src="./assets/question-circle-blue.svg" onclick="openInfoCard()" />
         </div>
       </div>
-    </div> -->
-    <script>
-      function closeStart() {
-        document.getElementById("card-start-content").style.display = "none";
-        document.getElementById("card-form").style.display = "flex";
-      }
+    </div>
 
-      function openInfoCard() {
-        document.getElementById("info-card-wrapper").style.display = "flex";
-        document.getElementById("card-start").style.display = "none";
-      }
+    <div id="card-container">
+      <div id="card">
+        <br /><br /><br />
+        <div id="title">Félicitations !</div>
+        <div class="message">
+          Vous êtes le gagnant de notre jeu, vous remportez le smartphone de
+          votre choix avec un an de forfait offert
+        </div>
+        <br /><br />
+        <div id="code">FFGB69685BG</div>
+        <div id="mail">placeholder mail</div>
+        <div class="message rdv">Rendez-vous :</div>
+        <div id="button1" class="button-container message">
+          <img class="button-img" src="./assets/BOUTON 01.png" alt="" />
+          <div><u>En ligne</u></div>
+          <div style="flex: 1"></div>
+        </div>
+        <div id="button2" class="button-container message">
+          <img class="button-img" src="./assets/BOUTON 02.png" alt="" />
+          <div>
+            Communiquez votre code à votre vendeur dans <u>votre boutique</u>
+          </div>
+          <div style="flex: 1"></div>
+        </div>
+        <br /><br /><br />
+      </div>
+    </div>
+  </div>
+  <script>
+    function closeStart() {
+      document.getElementById("card-start-content").style.display = "none";
+      document.getElementById("card-form").style.display = "flex";
+    }
 
-      function closeInfoCard() {
-        document.getElementById("info-card-wrapper").style.display = "none";
-        document.getElementById("card-start").style.display = "flex";
-      }
-    </script>
-  </body>
+    function openInfoCard() {
+      document.getElementById("info-card-wrapper").style.display = "flex";
+      document.getElementById("card-start").style.display = "none";
+    }
+
+    function closeInfoCard() {
+      document.getElementById("info-card-wrapper").style.display = "none";
+      document.getElementById("card-start").style.display = "flex";
+    }
+  </script>
+</body>
+
 </html>
 <script src="./packed.js"></script>
