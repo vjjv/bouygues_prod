@@ -243,7 +243,7 @@ import {
         session.play();
         let canvasRender = document.querySelector('canvas');
         canvasRender.style.width = '100%'
-        canvasRender.style.height = '100%'
+        canvasRender.style.height = '100%' 
     }
 
 
