@@ -16,7 +16,7 @@
   <canvas id="canvas"></canvas>
   <video id="video" style="display: none" autoplay muted playsinline></video>
 
-  <button id="startMedia" width="100x" height="100px">Start Media</button>
+  <button style="z-index: 11;" id="startMedia" width="100x" height="100px">Start Media</button>
   <script>
     const startMedia = document.getElementById('startMedia');
     startMedia.addEventListener('click', startCam(), false);
@@ -25,7 +25,7 @@
       var constraints = {
         audio: false,
         video: {
-          facingMode: facingMode
+          facingMode: "environment"
         }
       };
 
