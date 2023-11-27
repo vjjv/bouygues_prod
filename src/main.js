@@ -239,7 +239,7 @@ import {
         canvasRender.style.width = '100%'
         canvasRender.style.height = '100%'
     }
-
+ 
     
     // let ctx = canvas.getContext("webgl2");
     // console.log(ctx);
