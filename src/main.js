@@ -235,7 +235,7 @@ import {
         session.setSource(source);
         session.source.setRenderSize(window.innerWidth*1.5, window.innerHeight*1.5);
         session.play();
-        canvasRender = document.querySelector('canvas');
+        let canvasRender = document.querySelector('canvas');
         canvasRender.style.width = '100%'
         canvasRender.style.height = '100%'
     }
