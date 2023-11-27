@@ -28234,6 +28234,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
         session.applyLens(lenses[lens], { mail: mail, code: code });
         // let mediaStream = await navigator.mediaDevices(getUserMedia({ video: true }));
         mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
             video: {
                 facingMode: "environment",
             },

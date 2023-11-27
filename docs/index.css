@@ -16,6 +16,7 @@ body {
   padding: 0;
   overflow: hidden;
   color: #0e373c;
+  background-color: #0e373c;
 }
 @media screen and (min-width: 1080px) {
   #mobile {
