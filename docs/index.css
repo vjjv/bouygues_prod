@@ -45,6 +45,7 @@ body {
   font-size: 1.3rem;
   gap: 3vh;
   padding: 2% 5%;
+  min-height: 490px;
 }
 
 #desktop .card-content h2 {
