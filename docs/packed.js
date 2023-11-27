@@ -28077,6 +28077,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
             //let responseBrevoLoser = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: "-1" });
             console.log('Brevo : ' + 'No mail sent because you lost');
             startLens(1, 'loser@mail.com', '-1')
+            
         }
     }
     function incrementPlayedGames(email) {
