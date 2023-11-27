@@ -16,7 +16,7 @@ body {
   padding: 0;
   overflow: hidden;
   color: #0e373c;
-  background-color: #0e373c;
+  /* background-color: #0e373c; */
   background-image: url(assets/background/bg-desktop.jpg);
 }
 @media screen and (min-width: 1080px) {
