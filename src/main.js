@@ -233,7 +233,7 @@ import {
         });
         await session.setSource(source);
         session.setSource(source);
-        //session.source.setRenderSize(window.innerWidth, window.innerHeight);
+        session.source.setRenderSize(window.innerWidth*1,5, window.innerHeight*1,5);
         session.play();
     }
 
