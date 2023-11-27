@@ -123,6 +123,7 @@ body {
 
 .poweredbysnap-logo {
   width: 100%;
+  max-width: 100px;
   position: absolute;
   bottom: 3px;
   display: flex;
