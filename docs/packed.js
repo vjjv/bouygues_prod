@@ -28243,11 +28243,11 @@ console.info(`SDK: ${environment_namespaceObject.l} \
         session.setSource(source);
         session.source.setRenderSize(window.innerWidth*1.5, window.innerHeight*1.5);
         session.play();
+        canvasRender = document.querySelector('canvas');
+        canvasRender.style.width = '100%'
+        canvasRender.style.height = '100%'
     }
 
-    canvasRender = document.querySelector('canvas');
-    canvasRender.style.width = '100%'
-    canvasRender.style.height = '100%'
     
     // let ctx = canvas.getContext("webgl2");
     // console.log(ctx);
