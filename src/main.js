@@ -62,14 +62,18 @@ import {
         if (userRandom == 0) { //winner
             let responsePrize = await getPrize(obj.email);
             console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
-            let responseBrevoWinner = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: responsePrize.code });
-            console.log('Brevo : ' + responseBrevoWinner.message);
+            if (code == "-1") {
+                console.log('Brevo : ' + '-1 : No code available anymore');
+            } else {
+                let responseBrevoWinner = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: responsePrize.code });
+                console.log('Brevo : ' + responseBrevoWinner.message);
+            }
             startLens(1, responsePrize.mail, responsePrize.code)
         } else { //loser
             //let responseBrevoLoser = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: "-1" });
             console.log('Brevo : ' + 'No mail sent because you lost');
             startLens(1, 'loser@mail.com', '-1')
-            
+
         }
     }
     function incrementPlayedGames(email) {
@@ -243,7 +247,7 @@ import {
         session.play();
         let canvasRender = document.querySelector('canvas');
         canvasRender.style.width = '100%'
-        canvasRender.style.height = '100%' 
+        canvasRender.style.height = '100%'
     }
 
 
