@@ -28241,7 +28241,7 @@ console.info(`SDK: ${environment_namespaceObject.l} \
         });
         await session.setSource(source);
         session.setSource(source);
-        session.source.setRenderSize(window.innerWidth, window.innerHeight);
+        //session.source.setRenderSize(window.innerWidth, window.innerHeight);
         session.play();
     }
 
