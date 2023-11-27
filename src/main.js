@@ -39,7 +39,7 @@ import {
         });
 
         let numberOfPlay = incrementPlayedGames(formDataObject["email"]);
-        console.log(numberOfPlay > 3);
+        console.log('numberOfPlay : '+numberOfPlay > 3);
         if (Number(numberOfPlay) > 3) {
             document.getElementById("card-form").style.display = "none";
             document.getElementById("card-stop").style.display = "flex";
