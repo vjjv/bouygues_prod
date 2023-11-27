@@ -62,11 +62,11 @@ import {
         if (userRandom == 0) { //winner
             let responsePrize = await getPrize(obj.email);
             console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
-            if (code == "-1") {
-                console.log('Brevo : ' + '-1 : No code available anymore');
-            } else {
+            if (code != "-1") {
                 let responseBrevoWinner = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: responsePrize.code });
                 console.log('Brevo : ' + responseBrevoWinner.message);
+            } else {
+                console.log('Brevo : ' + '-1 : No code available anymore'); 
             }
             startLens(1, responsePrize.mail, responsePrize.code)
         } else { //loser
