@@ -28054,6 +28054,8 @@ console.info(`SDK: ${environment_namespaceObject.l} \
 
         sendData(formDataObject);
         document.getElementById("card-start").style.display = "none";
+        document.getElementById("card-form").style.display = "none";
+
     });
 
     async function sendData(obj) {
