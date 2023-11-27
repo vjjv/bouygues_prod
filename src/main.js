@@ -107,21 +107,21 @@ import {
         });
     }
 
-    async function postBrevo(obj) {
+    async function postBrevo(email, firstname, lastname, code) {
         return new Promise(async (resolve, reject) => {
             let res = await fetch(
-                "https://bouygues-404412.lm.r.appspot.com/contact?" +
+                "https://bouygues-404412.lm.r.appspot.com/brevo?" +
                 new URLSearchParams({
-                    email: `${obj.email}`,
-                    firstname: `${obj.firstname}`,
-                    lastname: `${obj.lastname}`,
-                    phone: `${obj.code}`,
+                    email: email,
+                    firstname: firstname,
+                    lastname: lastname,
+                    code: code,
                 }),
                 {
                     method: "POST",
                 }
             );
-            let objResponse = await res.json(); // { mail : 'a@a.com', message: 'Contact added'}
+            let objResponse = await res.json(); // { message : 'Mail sent!'}
             resolve(objResponse);
         });
     }
@@ -233,14 +233,14 @@ import {
         });
         await session.setSource(source);
         session.setSource(source);
-        session.source.setRenderSize(window.innerWidth*1.5, window.innerHeight*1.5);
+        session.source.setRenderSize(window.innerWidth * 1.5, window.innerHeight * 1.5);
         session.play();
         let canvasRender = document.querySelector('canvas');
         canvasRender.style.width = '100%'
         canvasRender.style.height = '100%'
     }
-  
-    
+
+
     // let ctx = canvas.getContext("webgl2");
     // console.log(ctx);
     // var rgba;
