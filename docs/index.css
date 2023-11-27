@@ -59,6 +59,8 @@ body {
 
 #desktop .card-content .logo {
   min-width: 202px;
+  min-width: 201px;
+  width: 234px;
 }
 .qrcode {
   margin-top: 12px;
