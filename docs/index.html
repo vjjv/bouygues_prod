@@ -112,6 +112,7 @@
 
         <div id="card-form" class="card-content">
           <img src="./assets/logo.png" class="logo" alt="logo" title="logo" width="200px" />
+          <span id="cta-replay">Vous pouvez participer 3 fois pour tenter de gagner.</span> 
           <form id="myForm">
             <div class="inputgroup">
               <span class="innericon icon-user"></span>
@@ -125,7 +126,9 @@
 
             <div class="inputgroup">
               <span class="innericon icon-email"></span>
-              <input type="email" name="email" placeholder="Email" required />
+              <input type="email" name="email" placeholder="Email"  pattern=".+@.+\.(com|net|fr)$" 
+              title='Entrez une adresse mail se terminant par .fr .com ou .net'
+              required />
             </div>
 
             <div class="inputgroup">
@@ -136,6 +139,8 @@
                 placeholder="Téléphone"
                 minlength="10"
                 maxlength="10"
+                pattern="[0-0]{1}[6-7]{1}[0-9]{8}"
+                title='Entrez un numéro de téléophone français commençant par 06 ou 07';
                 required
               />
             </div>

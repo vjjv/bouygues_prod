@@ -15,22 +15,22 @@ import {
 
 
     const form = document.getElementById("myForm");
-    form.addEventListener("submit", function (event) {
+    form.addEventListener("submit", async function (event) {
         // Prevent the default form submission behavior
         event.preventDefault();
-        let formMessageDiv = document.getElementById("form-message");
+        let formMessageDiv = document.getElementById("cta-replay");
 
         // Block form if it's between 8h and 20h
-        /*  let currentHour = new Date().getHours();
+        let currentHour = new Date().getHours();
         if (currentHour >= 8 && currentHour <= 20) {
-          //  console.log("It's between 8h and 20h");
-          formMessageDiv.textContent = "";
+          console.log("It's between 8h and 20h");
+        //   formMessageDiv.textContent = "";
         } else {
-          //  console.log("It's not between 8h and 20h");
-    
+          console.log("It's not between 8h and 20h");
           formMessageDiv.textContent = "Revenez demain à partir de 8h pour jouer";
+          formMessageDiv.style.color = "red";
           return;
-        }*/
+        }
         // You can access form data using form elements, for example:
         const formData = new FormData(form);
         const formDataObject = {};
@@ -38,28 +38,47 @@ import {
             formDataObject[key] = value;
         });
 
+        //baba
+        let nbPlays = await incPlays(formDataObject["email"]);
+        console.log('Participations serveur : '+nbPlays); 
+        //
         let numberOfPlay = incrementPlayedGames(formDataObject["email"]);
-        console.log('numberOfPlay : ' + numberOfPlay > 3);
-        if (Number(numberOfPlay) > 3) {
+        console.log('Participations local : ' + numberOfPlay);
+        if (Number(numberOfPlay) > 3 || nbPlays >= 3) {
             document.getElementById("card-form").style.display = "none";
             document.getElementById("card-stop").style.display = "flex";
             return;
         }
 
-        sendData(formDataObject);
+        sendData(formDataObject, Number(nbPlays));
         document.getElementById("card-start").style.display = "none";
         document.getElementById("card-form").style.display = "none";
 
     });
 
-    async function sendData(obj) {
-        let responseContact = await postContact(obj);
-        console.log(responseContact.message + " ::: " + responseContact.mail);
+    async function incPlays(mail) {
+        let nbPlays = await getPlays(mail)
+        // console.log('incPlays: '+ mail + ' : nbPlays: '+ nbPlays);
+        return nbPlays;
+    }
+
+    async function sendData(obj, nbPlays) {
+        if (nbPlays == 0) {
+            let responseContact = await postContact(obj);
+            console.log(responseContact.message + " ::: " + responseContact.mail);
+        } else {
+            console.log('No contact added because you already played ' + nbPlays + ' times.')
+        }
         let randomizer = await getRandomizer();
         console.log('Randomizer : ' + randomizer);
-        let userRandom = Math.floor(Math.random() * randomizer);
+        //Randomizer : 10
+        //userRandom : 8   => ==0?
+        //V2
+        //Randomizer : 35
+        //userRandom : 0-100 => 82<35 ?
+        let userRandom = (Math.floor(Math.random() * 100))+1;
         console.log('userRandom : ' + userRandom);
-        if (userRandom == 0) { //winner
+        if (userRandom < randomizer) { //winner
             let responsePrize = await getPrize(obj.email);
             console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
             if (responsePrize.code != "-1") { //winner
@@ -161,6 +180,22 @@ import {
             );
             let objResponse = await res.json(); // { randomizer : '10''}
             resolve(objResponse.randomizer);
+        });
+    }
+
+    async function getPlays(mail) {
+        return new Promise(async (resolve, reject) => {
+            let res = await fetch(
+                "https://bouygues-404412.lm.r.appspot.com/plays?" +
+                new URLSearchParams({
+                    mail: mail,
+                }),
+                {
+                    method: "GET",
+                }
+            );
+            let objResponse = await res.json(); // { plays: '3'}
+            resolve(objResponse.plays);
         });
     }
 
