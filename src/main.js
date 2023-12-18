@@ -23,13 +23,13 @@ import {
         // Block form if it's between 8h and 20h
         let currentHour = new Date().getHours();
         if (currentHour >= 8 && currentHour <= 20) {
-          console.log("It's between 8h and 20h");
-        //   formMessageDiv.textContent = "";
+            console.log("It's between 8h and 20h");
+            //   formMessageDiv.textContent = "";
         } else {
-          console.log("It's not between 8h and 20h");
-          formMessageDiv.textContent = "Revenez demain à partir de 8h pour jouer";
-          formMessageDiv.style.color = "red";
-          return;
+            console.log("It's not between 8h and 20h");
+            formMessageDiv.textContent = "Revenez demain à partir de 8h pour jouer";
+            formMessageDiv.style.color = "red";
+            return;
         }
         // You can access form data using form elements, for example:
         const formData = new FormData(form);
@@ -40,7 +40,7 @@ import {
 
         //baba
         let nbPlays = await incPlays(formDataObject["email"]);
-        console.log('Participations serveur : '+nbPlays); 
+        console.log('Participations serveur : ' + nbPlays);
         //
         let numberOfPlay = incrementPlayedGames(formDataObject["email"]);
         console.log('Participations local : ' + numberOfPlay);
@@ -71,23 +71,27 @@ import {
         }
         let randomizer = await getRandomizer();
         console.log('Randomizer : ' + randomizer);
-        //Randomizer : 10
+        //Randomizer : 10 
         //userRandom : 8   => ==0?
         //V2
         //Randomizer : 35
         //userRandom : 0-100 => 82<35 ?
-        let userRandom = (Math.floor(Math.random() * 100))+1;
+        let userRandom = (Math.floor(Math.random() * 100)) + 1;
         console.log('userRandom : ' + userRandom);
         if (userRandom < randomizer) { //winner
-            let responsePrize = await getPrize(obj.email);
-            console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
-            if (responsePrize.code != "-1") { //winner
-                let responseBrevoWinner = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: responsePrize.code });
-                console.log('Brevo : ' + responseBrevoWinner.message);
-                startLens(1, responsePrize.mail, responsePrize.code)
-            } else { //loser
-                console.log('Brevo : ' + '-1 : No code available anymore');
-                startLens(1, 'loser@mail.com', '-1')
+            if (randomizer == 0 || randomizer == '0') {
+                startLens(1, 'loser@mail.com', '-1');
+            } else {
+                let responsePrize = await getPrize(obj.email);
+                console.log('Prize : ' + responsePrize.mail + ' / ' + responsePrize.code);
+                if (responsePrize.code != "-1") { //winner
+                    let responseBrevoWinner = await postBrevo({ email: obj.email, firstname: obj.firstname, lastname: obj.lastname, code: responsePrize.code });
+                    console.log('Brevo : ' + responseBrevoWinner.message);
+                    startLens(1, responsePrize.mail, responsePrize.code)
+                } else { //loser
+                    console.log('Brevo : ' + '-1 : No code available anymore');
+                    startLens(1, 'loser@mail.com', '-1')
+                }
             }
         } else { //loser
             console.log('Brevo : ' + 'No mail sent because you lost');
